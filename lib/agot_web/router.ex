@@ -17,6 +17,7 @@ defmodule AgotWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/players/", PlayersController, :all
   end
 
   # Other scopes may use custom stacks.
