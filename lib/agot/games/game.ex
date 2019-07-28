@@ -11,13 +11,13 @@ defmodule Agot.Games.Game do
     :loser_agenda,
     :tournament_id,
     :tournament_date,
-    :game_id,
+    :id,
   ]
 
   @required_fields [
     :tournament_id,
     :tournament_date,
-    :game_id,
+    :id,
   ]
 
   schema "games" do
@@ -26,7 +26,6 @@ defmodule Agot.Games.Game do
     field :loser_faction, :string
     field :loser_agenda, :string
     field :tournament_id, :integer
-    field :game_id, :integer
     field :tournament_date, :utc_datetime
 
     belongs_to :winner, Player

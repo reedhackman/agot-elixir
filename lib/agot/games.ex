@@ -6,13 +6,13 @@ defmodule Agot.Games do
 
   import Ecto.Query
 
-  def list_games_for_player(player_id) do
+  def list_games_for_player(id) do
     query =
       from game in Game,
       left_join: winner in assoc(game, :winner),
       left_join: loser in assoc(game, :loser),
       preload: [winner: winner, loser: loser],
-      where: winner.player_id == ^player_id or loser.player_id == ^player_id
+      where: winner.id == ^id or loser.id == ^id
     Repo.all(query)
   end
 

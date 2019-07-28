@@ -16,9 +16,9 @@ defmodule Agot.Tests do
   end
 
   def update_player(attrs) do
-    Players.update_player(attrs.player_id, attrs)
-    Cache.put_player(attrs.player_id, attrs)
-    Cache.delete_updated_player(attrs.player_id)
+    Players.update_player(attrs.id, attrs)
+    Cache.put_player(attrs.id, attrs)
+    Cache.delete_updated_player(attrs.id)
   end
 
   def clean_and_process_game(game) do
@@ -75,7 +75,7 @@ defmodule Agot.Tests do
               agenda: game.p2_agenda
             },
             misc: %{
-              game_id: game.game_id,
+              id: game.game_id,
               tournament_id: game.tournament_id,
               tournament_date: game.tournament_date
             }
@@ -97,7 +97,7 @@ defmodule Agot.Tests do
               agenda: game.p2_agenda
             },
             misc: %{
-              game_id: game.game_id,
+              id: game.game_id,
               tournament_id: game.tournament_id,
               tournament_date: game.tournament_date
             }
@@ -129,7 +129,7 @@ defmodule Agot.Tests do
         loser_faction: game.loser.faction,
         loser_agenda: game.loser.agenda,
         tournament_id: game.misc.tournament_id,
-        game_id: game.misc.game_id,
+        id: game.misc.id,
         tournament_date: game.misc.tournament_date
       }, game.winner.id, game.loser.id)
     rate(winner, loser)
@@ -141,8 +141,8 @@ defmodule Agot.Tests do
     e_l = 1 / (1 + :math.pow(10, (winner.rating - loser.rating) / 400))
     r_w = winner.rating + k * (1 - e_w)
     r_l = loser.rating + k * (0 - e_l)
-    Cache.put_updated_player(winner.player_id, %{player_id: winner.player_id, name: winner.name, num_wins: winner.num_wins + 1, num_losses: winner.num_losses, rating: r_w})
-    Cache.put_updated_player(loser.player_id, %{player_id: loser.player_id, name: loser.name, num_wins: loser.num_wins, num_losses: loser.num_losses + 1, rating: r_l})
+    Cache.put_updated_player(winner.id, %{id: winner.id, name: winner.name, num_wins: winner.num_wins + 1, num_losses: winner.num_losses, rating: r_w})
+    Cache.put_updated_player(loser.id, %{id: loser.id, name: loser.name, num_wins: loser.num_wins, num_losses: loser.num_losses + 1, rating: r_l})
   end
 
   def get_player(id, name) do

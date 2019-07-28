@@ -10,12 +10,12 @@ defmodule Agot.Players do
   end
 
   def get_player(id) do
-    Repo.one(from player in Player, where: player.player_id == ^id)
+    Repo.one(from player in Player, where: player.id == ^id)
   end
 
 
   def get_player(id, name) do
-    case Repo.one(from player in Player, where: player.player_id == ^id) do
+    case Repo.one(from player in Player, where: player.id == ^id) do
       nil ->
         create_player(id, name)
       player ->
@@ -26,7 +26,7 @@ defmodule Agot.Players do
 
   def get_winner(id) do
     query =
-      from player in Player, where: player.player_id == ^id,
+      from player in Player, where: player.id == ^id,
       left_join: wins in assoc(player, :wins),
       preload: [wins: wins]
     Repo.one(query)
@@ -34,14 +34,14 @@ defmodule Agot.Players do
 
   def get_loser(id) do
     query =
-      from player in Player, where: player.player_id == ^id,
+      from player in Player, where: player.id == ^id,
       left_join: losses in assoc(player, :losses),
       preload: [losses: losses]
     Repo.one(query)
   end
 
   def create_player(id, name) do
-    attrs = %{name: name, player_id: id, num_wins: 0, num_losses: 0, rating: 1200}
+    attrs = %{name: name, id: id, num_wins: 0, num_losses: 0, rating: 1200}
     Cache.put_player(id, attrs)
     %Player{}
     |> Player.changeset(attrs)
@@ -49,8 +49,8 @@ defmodule Agot.Players do
     |> Kernel.elem(1)
   end
 
-  def update_player(player_id, attrs) do
-    Repo.one(from p in Player, where: p.player_id == ^player_id)
+  def update_player(id, attrs) do
+    Repo.one(from p in Player, where: p.id == ^id)
     |> Player.changeset(attrs)
     |> Repo.update()
   end

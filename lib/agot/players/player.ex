@@ -6,7 +6,7 @@ defmodule Agot.Players.Player do
 
   @fields [
     :name,
-    :player_id,
+    :id,
     :num_wins,
     :num_losses,
     :rating
@@ -14,13 +14,12 @@ defmodule Agot.Players.Player do
 
   schema "players" do
     field :name, :string
-    field :player_id, :integer
     field :num_wins, :integer
     field :num_losses, :integer
     field :rating, :float
 
-    has_many :wins, Game, foreign_key: :winner_id, references: :player_id
-    has_many :losses, Game, foreign_key: :loser_id, references: :player_id
+    has_many :wins, Game, foreign_key: :winner_id, references: :id
+    has_many :losses, Game, foreign_key: :loser_id, references: :id
 
     timestamps()
   end

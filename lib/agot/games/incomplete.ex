@@ -4,12 +4,11 @@ defmodule Agot.Games.Incomplete do
 
   @fields [
     :tournament_id,
-    :game_id
+    :id
   ]
 
   schema "incomplete_games" do
     field :tournament_id, :integer
-    field :game_id, :integer
 
     timestamps()
   end

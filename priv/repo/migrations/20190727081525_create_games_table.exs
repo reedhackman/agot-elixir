@@ -8,7 +8,6 @@ defmodule Agot.Repo.Migrations.CreateGamesTable do
       add :winner_agenda, :string
       add :loser_agenda, :string
       add :tournament_id, :integer
-      add :game_id, :integer
       add :tournament_date, :utc_datetime
 
       add :winner_id, references(:players)
