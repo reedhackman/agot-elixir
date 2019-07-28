@@ -60,7 +60,7 @@ defmodule Agot.Tests do
         nil
 
       game.p1_points > game.p2_points ->
-        game =
+        _game =
           %{
             winner: %{
               id: game.p1_id,
@@ -82,7 +82,7 @@ defmodule Agot.Tests do
           }
 
       game.p2_points > game.p1_points ->
-        game =
+        _game =
           %{
             loser: %{
               id: game.p1_id,
