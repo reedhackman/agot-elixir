@@ -9,9 +9,14 @@ defmodule Agot.Cache do
     :ets.new(:exclude_cache, [:set, :public, :named_table])
     :ets.new(:players_cache, [:set, :public, :named_table])
     :ets.new(:updated_players_cache, [:set, :public, :named_table])
+    :ets.new(:decks_cache, [:set, :public, :named_table])
+    :ets.new(:updated_decks_cache, [:set, :public, :named_table])
+    :ets.new(:matchups_cache, [:set, :public, :named_table])
+    :ets.new(:updated_matchups_cache, [:set, :public, :named_table])
     {:ok, state}
   end
 
+  # EXCLUDE
   def get_exclude(key) do
     GenServer.call(AgotCache, {:get, key, :exclude_cache})
   end
@@ -20,10 +25,7 @@ defmodule Agot.Cache do
     GenServer.cast(AgotCache, {:put, key, data, :exclude_cache})
   end
 
-  def delete_player(key) do
-    GenServer.cast(AgotCache, {:delete, key, :players_cache})
-  end
-
+  # PLAYERS
   def get_player(key) do
     GenServer.call(AgotCache, {:get, key, :players_cache})
   end
@@ -32,6 +34,7 @@ defmodule Agot.Cache do
     GenServer.cast(AgotCache, {:put, key, data, :players_cache})
   end
 
+  # UPDATED PLAYERS
   def delete_updated_player(key) do
     GenServer.cast(AgotCache, {:delete, key, :updated_players_cache})
   end
@@ -42,6 +45,50 @@ defmodule Agot.Cache do
 
   def put_updated_player(key, data) do
     GenServer.cast(AgotCache, {:put, key, data, :updated_players_cache})
+  end
+
+  # DECKS
+  def get_deck(key) do
+    GenServer.call(AgotCache, {:get, key, :decks_cache})
+  end
+
+  def put_deck(key, data) do
+    GenServer.cast(AgotCache, {:put, key, data, :decks_cache})
+  end
+
+  # UPDATED DECKS
+  def delete_updated_deck(key) do
+    GenServer.cast(AgotCache, {:delete, key, :updated_decks_cache})
+  end
+
+  def get_updated_deck(key) do
+    GenServer.call(AgotCache, {:get, key, :updated_decks_cache})
+  end
+
+  def put_updated_deck(key, data) do
+    GenServer.cast(AgotCache, {:put, key, data, :updated_decks_cache})
+  end
+
+  # MATCHUPS
+  def get_matchup(key) do
+    GenServer.call(AgotCache, {:get, key, :matchups_cache})
+  end
+
+  def put_matchup(key, data) do
+    GenServer.cast(AgotCache, {:put, key, data, :matchups_cache})
+  end
+
+  # UPDATED MATCHUPS
+  def delete_updated_matchup(key) do
+    GenServer.cast(AgotCache, {:delete, key, :updated_matchups_cache})
+  end
+
+  def get_updated_matchup(key) do
+    GenServer.call(AgotCache, {:get, key, :updated_matchups_cache})
+  end
+
+  def put_updated_matchup(key, data) do
+    GenServer.cast(AgotCache, {:put, key, data, :updated_matchups_cache})
   end
 
   def handle_call({:get, key, table}, _from, state) do
