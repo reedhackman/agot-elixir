@@ -8,7 +8,9 @@ defmodule Agot.Tests do
   def process_all_games do
     data = Poison.decode!(File.read!("./tjp"))
     Enum.each(data, fn x -> clean_and_process_game(x) end)
-    update_all_players()
+    #update_all_players()
+    update_all_decks()
+    #update_all_matchups()
   end
 
   def update_all_players do
@@ -17,10 +19,34 @@ defmodule Agot.Tests do
     |> Enum.each(fn x -> update_player(x) end)
   end
 
+  def update_all_decks do
+    :ets.match(:updated_decks_cache, {:"_", :"$2"})
+    |> List.flatten()
+    |> Enum.each(fn x -> update_deck(x) end)
+  end
+
+  def update_all_matchups do
+    :ets.match(:updated_matchups_cache, {:"_", :"$2"})
+    |> List.flatten()
+    |> Enum.each(fn x -> update_matchup(x) end)
+  end
+
   def update_player(attrs) do
     Players.update_player(attrs.id, attrs)
     Cache.put_player(attrs.id, attrs)
     Cache.delete_updated_player(attrs.id)
+  end
+
+  def update_deck(attrs) do
+    Decks.update_deck(attrs.id, attrs)
+    Cache.put_deck({attrs.faction, attrs.agenda}, attrs)
+    Cache.delete_updated_deck({attrs.faction, attrs.agenda})
+  end
+
+  def update_matchup(attrs) do
+    Matchups.update_matchup(attrs.id, attrs)
+    Cache.put_matchup({attrs.faction, attrs.agenda, attrs.oppfaction, attrs.oppagenda}, attrs)
+    Cache.delete_updated_matchup({attrs.faction, attrs.agenda, attrs.oppfaction, attrs.oppagenda})
   end
 
   def clean_and_process_game(game) do
@@ -34,7 +60,6 @@ defmodule Agot.Tests do
   end
 
   def strings_to_atoms(attrs) do
-    IO.inspect(attrs)
     cond do
       attrs["p1_agenda"] == nil and attrs["p2_agenda"] == nil ->
         %{
@@ -203,28 +228,28 @@ defmodule Agot.Tests do
       cond do
         winner_faction != nil and loser_faction != nil ->
           winner_matchup =
-            case Cache.get_updated_matchup(winner_faction <> winner_agenda <> loser_faction <> loser_agenda) do
+            case Cache.get_updated_matchup({winner_faction, winner_agenda, loser_faction, loser_agenda}) do
               nil ->
                 get_matchup(winner_faction, winner_agenda, loser_faction, loser_agenda)
               matchup ->
                 matchup
             end
           loser_matchup =
-            case Cache.get_updated_matchup(loser_faction <> loser_agenda <> winner_faction <> winner_agenda) do
+            case Cache.get_updated_matchup({loser_faction, loser_agenda, winner_faction, winner_agenda}) do
               nil ->
                 get_matchup(loser_faction, loser_agenda, winner_faction, winner_agenda)
               matchup ->
                 matchup
             end
           winner_deck =
-            case Cache.get_updated_deck(winner_faction <> winner_agenda) do
+            case Cache.get_updated_deck({winner_faction, winner_agenda}) do
               nil ->
                 get_deck(winner_faction, winner_agenda)
               deck ->
                 deck
               end
           loser_deck =
-            case Cache.get_updated_deck(loser_faction <> loser_agenda) do
+            case Cache.get_updated_deck({loser_faction, loser_agenda}) do
               nil ->
                 get_deck(loser_faction, loser_agenda)
               deck ->
@@ -235,28 +260,28 @@ defmodule Agot.Tests do
 
         winner_agenda === "The Free Folk" and loser_faction != nil ->
           winner_matchup =
-            case Cache.get_updated_matchup(winner_agenda <> winner_agenda <> loser_faction <> loser_agenda) do
+            case Cache.get_updated_matchup({winner_agenda, winner_agenda, loser_faction, loser_agenda}) do
               nil ->
                 get_matchup(winner_agenda, winner_agenda, loser_faction, loser_agenda)
               matchup ->
                 matchup
             end
           loser_matchup =
-            case Cache.get_updated_matchup(loser_faction <> loser_agenda <> winner_agenda <> winner_agenda) do
+            case Cache.get_updated_matchup({loser_faction, loser_agenda, winner_agenda, winner_agenda}) do
               nil ->
                 get_matchup(loser_faction, loser_agenda, winner_agenda, winner_agenda)
               matchup ->
                 matchup
             end
           winner_deck =
-            case Cache.get_updated_deck(winner_agenda <> winner_agenda) do
+            case Cache.get_updated_deck({winner_agenda, winner_agenda}) do
               nil ->
                 get_deck(winner_agenda, winner_agenda)
               deck ->
                 deck
               end
           loser_deck =
-            case Cache.get_updated_deck(loser_faction <> loser_agenda) do
+            case Cache.get_updated_deck({loser_faction, loser_agenda}) do
               nil ->
                 get_deck(loser_faction, loser_agenda)
               deck ->
@@ -267,28 +292,28 @@ defmodule Agot.Tests do
 
         winner_faction != nil and loser_agenda === "The Free Folk" ->
           winner_matchup =
-            case Cache.get_updated_matchup(winner_faction <> winner_agenda <> loser_agenda <> loser_agenda) do
+            case Cache.get_updated_matchup({winner_faction, winner_agenda, loser_agenda, loser_agenda}) do
               nil ->
                 get_matchup(winner_faction, winner_agenda, loser_agenda, loser_agenda)
               matchup ->
                 matchup
             end
           loser_matchup =
-            case Cache.get_updated_matchup(loser_agenda <> loser_agenda <> winner_faction <> winner_agenda) do
+            case Cache.get_updated_matchup({loser_agenda, loser_agenda, winner_faction, winner_agenda}) do
               nil ->
                 get_matchup(loser_agenda, loser_agenda, winner_faction, winner_agenda)
               matchup ->
                 matchup
             end
           winner_deck =
-            case Cache.get_updated_deck(winner_faction <> winner_agenda) do
+            case Cache.get_updated_deck({winner_faction, winner_agenda}) do
               nil ->
                 get_deck(winner_faction, winner_agenda)
               deck ->
                 deck
               end
           loser_deck =
-            case Cache.get_updated_deck(loser_agenda <> loser_agenda) do
+            case Cache.get_updated_deck({loser_agenda, loser_agenda}) do
               nil ->
                 get_deck(loser_agenda, loser_agenda)
               deck ->
@@ -299,28 +324,28 @@ defmodule Agot.Tests do
 
         winner_agenda === "The Free Folk" and loser_agenda === "The Free Folk" ->
           winner_matchup =
-            case Cache.get_updated_matchup(winner_agenda <> winner_agenda <> loser_agenda <> loser_agenda) do
+            case Cache.get_updated_matchup({winner_agenda, winner_agenda, loser_agenda, loser_agenda}) do
               nil ->
                 get_matchup(winner_agenda, winner_agenda, loser_agenda, loser_agenda)
               matchup ->
                 matchup
             end
           loser_matchup =
-            case Cache.get_updated_matchup(loser_agenda <> loser_agenda <> winner_agenda <> winner_agenda) do
+            case Cache.get_updated_matchup({loser_agenda, loser_agenda, winner_agenda, winner_agenda}) do
               nil ->
                 get_matchup(loser_agenda, loser_agenda, winner_agenda, winner_agenda)
               matchup ->
                 matchup
             end
           winner_deck =
-            case Cache.get_updated_deck(winner_agenda <> winner_agenda) do
+            case Cache.get_updated_deck({winner_agenda, winner_agenda}) do
               nil ->
                 get_deck(winner_agenda, winner_agenda)
               deck ->
                 deck
               end
           loser_deck =
-            case Cache.get_updated_deck(loser_agenda <> loser_agenda) do
+            case Cache.get_updated_deck({loser_agenda, loser_agenda}) do
               nil ->
                 get_deck(loser_agenda, loser_agenda)
               deck ->
@@ -335,17 +360,13 @@ defmodule Agot.Tests do
   end
 
   def process_matchup(winner_matchup, loser_matchup) do
-    Cache.put_updated_matchup(winner_matchup.faction <> winner_matchup.agenda <> winner_matchup.oppfaction <> winner_matchup.oppagenda,
-      %{faction: winner_matchup.faction, agenda: winner_matchup.agenda, oppfaction: winner_matchup.oppfaction, oppagenda: winner_matchup.oppagenda, wins: winner_matchup.wins + 1, losses: winner_matchup.losses})
-    Cache.put_updated_matchup(loser_matchup.faction <> loser_matchup.agenda <> loser_matchup.oppfaction <> loser_matchup.oppagenda,
-      %{faction: loser_matchup.faction, agenda: loser_matchup.agenda, oppfaction: loser_matchup.oppfaction, oppagenda: loser_matchup.oppagenda, wins: loser_matchup.wins, losses: loser_matchup.losses + 1})
+    Cache.put_updated_matchup({winner_matchup.faction, winner_matchup.agenda, loser_matchup.faction, loser_matchup.agenda}, %{id: winner_matchup.id, faction: winner_matchup.faction, agenda: winner_matchup.agenda, oppfaction: winner_matchup.oppfaction, oppagenda: winner_matchup.oppagenda, wins: winner_matchup.wins + 1, losses: winner_matchup.losses})
+    Cache.put_updated_matchup({loser_matchup.faction, loser_matchup.agenda, winner_matchup.faction, winner_matchup.agenda}, %{id: loser_matchup.id, faction: loser_matchup.faction, agenda: loser_matchup.agenda, oppfaction: loser_matchup.oppfaction, oppagenda: loser_matchup.oppagenda, wins: loser_matchup.wins, losses: loser_matchup.losses + 1})
   end
 
   def process_decks(winner_deck, loser_deck) do
-    Cache.put_updated_deck(winner_deck.faction <> winner_deck.agenda,
-      %{faction: winner_deck.faction, agenda: winner_deck.agenda, wins: winner_deck.wins + 1, losses: winner_deck.losses})
-    Cache.put_updated_deck(loser_deck.faction <> loser_deck.agenda,
-      %{faction: loser_deck.faction, agenda: loser_deck.agenda, wins: loser_deck.wins, losses: loser_deck.losses + 1})
+    Cache.put_updated_deck({winner_deck.faction, winner_deck.agenda}, %{id: winner_deck.id, faction: winner_deck.faction, agenda: winner_deck.agenda, wins: winner_deck.wins + 1, losses: winner_deck.losses})
+    Cache.put_updated_deck({loser_deck.faction, loser_deck.agenda}, %{id: loser_deck.id, faction: loser_deck.faction, agenda: loser_deck.agenda, wins: loser_deck.wins, losses: loser_deck.losses + 1})
   end
 
   def rate(winner, loser) do
@@ -371,25 +392,25 @@ defmodule Agot.Tests do
   end
 
   def get_deck(faction, agenda) do
-    case Cache.get_deck(faction <> agenda) do
+    case Cache.get_deck({faction, agenda}) do
       nil ->
         deck = Decks.get_deck(faction, agenda)
-        Cache.put_updated_deck(faction <> agenda, deck)
+        Cache.put_updated_deck({faction, agenda}, %{id: deck.id, faction: deck.faction, agenda: deck.agenda, wins: deck.wins, losses: deck.losses})
         deck
       deck ->
-        Cache.put_updated_deck(faction <> agenda, deck)
+        Cache.put_updated_deck({faction, agenda}, %{id: deck.id, faction: deck.faction, agenda: deck.agenda, wins: deck.wins, losses: deck.losses})
         deck
     end
   end
 
   def get_matchup(faction, agenda, oppfaction, oppagenda) do
-    case Cache.get_matchup(faction <> agenda <> oppfaction <> oppagenda) do
+    case Cache.get_matchup({faction, agenda, oppfaction, oppagenda}) do
       nil ->
         matchup = Matchups.get_matchup(faction, agenda, oppfaction, oppagenda)
-        Cache.put_updated_matchup(faction <> agenda <> oppfaction <> oppagenda, matchup)
+        Cache.put_updated_matchup({faction, agenda, oppfaction, oppagenda}, %{id: matchup.id, faction: matchup.faction, agenda: matchup.agenda, oppfaction: matchup.oppfaction, oppagenda: matchup.oppagenda, wins: matchup.wins, losses: matchup.losses})
         matchup
       matchup ->
-        Cache.put_updated_matchup(faction <> agenda <> oppfaction <> oppagenda, matchup)
+        Cache.put_updated_matchup({faction, agenda, oppfaction, oppagenda}, %{id: matchup.id, faction: matchup.faction, agenda: matchup.agenda, oppfaction: matchup.oppfaction, oppagenda: matchup.oppagenda, wins: matchup.wins, losses: matchup.losses})
         matchup
     end
   end
