@@ -22,13 +22,13 @@ defmodule Agot.Tests do
   def update_all_decks do
     :ets.match(:updated_decks_cache, {:"_", :"$2"})
     |> List.flatten()
-    |> Enum.each(fn x -> update_deck(x) end)
+    |> Enum.each(fn x -> update_deck_by_id(x) end)
   end
 
   def update_all_matchups do
     :ets.match(:updated_matchups_cache, {:"_", :"$2"})
     |> List.flatten()
-    |> Enum.each(fn x -> update_matchup(x) end)
+    |> Enum.each(fn x -> update_matchup_by_id(x) end)
   end
 
   def update_player(attrs) do
@@ -37,14 +37,14 @@ defmodule Agot.Tests do
     Cache.delete_updated_player(attrs.id)
   end
 
-  def update_deck(attrs) do
-    Decks.update_deck(attrs.id, attrs)
+  def update_deck_by_id(attrs) do
+    Decks.update_deck_by_id(attrs.id, attrs)
     Cache.put_deck({attrs.faction, attrs.agenda}, attrs)
     Cache.delete_updated_deck({attrs.faction, attrs.agenda})
   end
 
-  def update_matchup(attrs) do
-    Matchups.update_matchup(attrs.id, attrs)
+  def update_matchup_by_id(attrs) do
+    Matchups.update_matchup_by_id(attrs.id, attrs)
     Cache.put_matchup({attrs.faction, attrs.agenda, attrs.oppfaction, attrs.oppagenda}, attrs)
     Cache.delete_updated_matchup({attrs.faction, attrs.agenda, attrs.oppfaction, attrs.oppagenda})
   end

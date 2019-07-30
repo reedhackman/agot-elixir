@@ -2,6 +2,7 @@ defmodule Agot.Decks do
   alias Agot.Decks.Deck
   alias Agot.Repo
   alias Agot.Cache
+  alias Agot.Games.Game
 
   import Ecto.Query
 
@@ -18,8 +19,13 @@ defmodule Agot.Decks do
 
   def get_deck(faction, agenda) do
     query =
-      from deck in Deck,
-      where: deck.faction == ^faction and deck.agenda == ^agenda
+      if agenda == nil do
+        from deck in Deck,
+        where: deck.faction == ^faction and is_nil(deck.agenda)
+      else
+        from deck in Deck,
+        where: deck.faction == ^faction and deck.agenda == ^agenda
+      end
     case Repo.one(query) do
       nil ->
         create_deck(faction, agenda)
@@ -29,7 +35,19 @@ defmodule Agot.Decks do
     end
   end
 
-  def update_deck(deck_id, attrs) do
+  def get_games_for_deck(faction, agenda) do
+    query =
+      if agenda == nil do
+        from game in Game,
+        where: (game.winner_faction == ^faction and is_nil(game.winner_agenda)) or (game.loser_faction == ^faction and is_nil(game.loser_agenda))
+      else
+        from game in Game,
+        where: (game.winner_faction == ^faction and game.winner_agenda == ^agenda) or (game.loser_faction == ^faction and game.loser_agenda == ^agenda)
+      end
+    Repo.all(query)
+  end
+
+  def update_deck_by_id(deck_id, attrs) do
     Repo.one(from deck in Deck, where: deck.id == ^deck_id)
     |> Deck.changeset(attrs)
     |> Repo.update()
