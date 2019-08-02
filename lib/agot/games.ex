@@ -16,6 +16,17 @@ defmodule Agot.Games do
     Repo.all(query)
   end
 
+  def list_incomplete do
+    Repo.all(Incomplete)
+  end
+
+  def list_incomplete_for_tournament(id) do
+    query =
+      from incomplete in Incomplete,
+      where: incomplete.tournament_id == ^id
+    Repo.all(query)
+  end
+
   def create_game(attrs, winner_id, loser_id) do
     winner = Players.get_winner(winner_id)
     loser = Players.get_loser(loser_id)
@@ -28,5 +39,19 @@ defmodule Agot.Games do
     %Incomplete{}
     |> Incomplete.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def delete_incomplete_tournament(id) do
+    query =
+      from incomplete in Incomplete,
+      where: incomplete.tournament_id == ^id
+    Repo.delete_all(query)
+  end
+
+  def delete_incomplete_game(id) do
+    query =
+      from incomplete in Incomplete, where: incomplete.id == ^id
+    Repo.one(query)
+    |> Repo.delete()
   end
 end

@@ -1,16 +1,25 @@
-defmodule Agot.Tests do
+defmodule Agot.Analytica do
   alias Agot.Cache
   alias Agot.Players
   alias Agot.Games
   alias Agot.Matchups
   alias Agot.Decks
+  alias Agot.Misc
 
-  def process_all_games do
-    data = Poison.decode!(File.read!("./tjp"))
-    Enum.each(data, fn x -> clean_and_process_game(x) end)
-    #update_all_players()
+  def process_all_games(data, page_number, page_length) do
+    #data = Poison.decode!(File.read!("./tjp"))
+    Enum.each(data, fn x -> check_for_illegal(x) end)
+    exclude_map =
+      :ets.match(:exclude_cache, {:"_", :"$2"})
+      |> List.flatten()
+    exclude_list =
+      exclude_map
+      |> Enum.map(fn x -> x.tournament_id end)
+    Enum.each(data, fn x -> clean_and_process_game(x, exclude_list) end)
+    update_all_players()
     update_all_decks()
-    #update_all_matchups()
+    update_all_matchups()
+    update_position(%{page_number: page_number, page_length: page_length})
   end
 
   def update_all_players do
@@ -49,6 +58,24 @@ defmodule Agot.Tests do
     Cache.delete_updated_matchup({attrs.faction, attrs.agenda, attrs.oppfaction, attrs.oppagenda})
   end
 
+  def update_position(attrs) do
+    Misc.update_position(attrs)
+  end
+
+  def clean_and_process_game(game, exclude_list) do
+    if Enum.member?(exclude_list, game["tournament_id"]) do
+      nil
+    else
+      temp =
+        strings_to_atoms(game)
+        |> check_game()
+      cond do
+        temp === nil -> nil
+        true -> process_game(temp)
+      end
+    end
+  end
+
   def clean_and_process_game(game) do
     temp =
       strings_to_atoms(game)
@@ -76,7 +103,7 @@ defmodule Agot.Tests do
           p2_agenda: "",
           tournament_id: attrs["tournament_id"],
           tournament_date: attrs["tournament_date"],
-          game_id: attrs["game_id"]
+          game_id: attrs["game_id"],
         }
 
       attrs["p1_agenda"] == nil ->
@@ -138,7 +165,7 @@ defmodule Agot.Tests do
   def check_game(game) do
     cond do
       game.game_status !== 100 ->
-        Games.create_incomplete_game(%{tournament_id: game.tournament_id, game_id: game.game_id})
+        Games.create_incomplete_game(%{tournament_id: game.tournament_id, id: game.game_id})
         nil
 
       game.p1_id < 1 or game.p2_id < 1 ->
@@ -412,6 +439,37 @@ defmodule Agot.Tests do
       matchup ->
         Cache.put_updated_matchup({faction, agenda, oppfaction, oppagenda}, %{id: matchup.id, faction: matchup.faction, agenda: matchup.agenda, oppfaction: matchup.oppfaction, oppagenda: matchup.oppagenda, wins: matchup.wins, losses: matchup.losses})
         matchup
+    end
+  end
+
+  def check_for_illegal(game) do
+    name = game["tournament_name"]
+    id = game["tournament_id"]
+    cond do
+      Regex.match?(~r/l5r/i, name) ->
+        Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
+      Regex.match?(~r/destiny/i, name) ->
+        Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
+      Regex.match?(~r/draft/i, name) ->
+        Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
+      game["p1_agenda"] == "Uniting the Seven Kingdoms" ->
+        Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
+      game["p1_agenda"] == "Treaty" ->
+        Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
+      game["p1_agenda"] == "Protectors of the Realm" ->
+        Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
+      game["p1_agenda"] == "The Power of Wealth" ->
+        Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
+      game["p2_agenda"] == "Uniting the Seven Kingdoms" ->
+        Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
+      game["p2_agenda"] == "Treaty" ->
+        Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
+      game["p2_agenda"] == "Protectors of the Realm" ->
+        Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
+      game["p2_agenda"] == "The Power of Wealth" ->
+        Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
+      true ->
+        nil
     end
   end
 end

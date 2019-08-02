@@ -22,7 +22,7 @@ defmodule Agot.Cache do
   end
 
   def put_exclude(key, data) do
-    GenServer.cast(AgotCache, {:put, key, data, :exclude_cache})
+    GenServer.cast(AgotCache, {:put_exclude, key, data, :exclude_cache})
   end
 
   # PLAYERS
@@ -102,6 +102,14 @@ defmodule Agot.Cache do
 
   def handle_cast({:put, key, data, table}, state) do
     :ets.insert(table, {key, data})
+    {:noreply, state}
+  end
+
+  def handle_cast({:put_exclude, key, data, table}, state) do
+    case :ets.lookup(table, key) do
+      [] -> :ets.insert(table, {key, data})
+      [{_key, _data}] -> nil
+    end
     {:noreply, state}
   end
 
