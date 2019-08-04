@@ -20,9 +20,14 @@ defmodule Agot.Misc do
   end
 
   def update_position(attrs) do
-    Repo.one(Position)
-    |> Position.changeset(attrs)
-    |> Repo.update()
+    position = Repo.one(Position)
+    if position.page_number == attrs.page_number and position.page_length == attrs.page_length do
+      nil
+    else
+      position
+      |> Position.changeset(attrs)
+      |> Repo.update()
+    end
   end
 
   def create_excluded_tournament(id, name) do

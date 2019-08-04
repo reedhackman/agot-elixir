@@ -41,9 +41,15 @@ defmodule Agot.Tjp do
 
   def check_tournament_age(tournament, time) do
     end_time = tournament["end_time"]
+    IO.inspect(tournament)
     if end_time != nil do
-      end_age = NaiveDateTime.diff(time, end_time)
+      end_age = NaiveDateTime.diff(time, NaiveDateTime.from_iso8601!(end_time))
       if end_age > (60 * 60 * 24 * 31) do
+        Games.delete_incomplete_tournament(tournament["tournament_id"])
+      end
+    else
+      start_age = NaiveDateTime.diff(time, NaiveDateTime.from_iso8601!(tournament["start_time"]))
+      if start_age > (60 * 60 * 24 * 365) do
         Games.delete_incomplete_tournament(tournament["tournament_id"])
       end
     end
