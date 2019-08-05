@@ -44,7 +44,8 @@ defmodule Agot.MixProject do
       {:poison, "~> 3.1"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"}
+      {:plug_cowboy, "~> 2.0"},
+      {:react_phoenix, "~> 1.0.0"}
     ]
   end
 
