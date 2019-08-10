@@ -58,13 +58,11 @@ defmodule Agot.Analytica do
 
   def update_all_decks do
     :ets.match(:updated_decks_cache, {:"$1", :"$2"})
-    |> List.flatten()
     |> Enum.each(fn x -> update_deck_by_id(List.first(x), List.last(x)) end)
   end
 
   def update_all_matchups do
     :ets.match(:updated_matchups_cache, {:"$1", :"$2"})
-    |> List.flatten()
     |> Enum.each(fn x -> update_matchup_by_id(List.first(x), List.last(x)) end)
   end
 
@@ -277,6 +275,10 @@ defmodule Agot.Analytica do
   end
 
   def process_decks_and_matchups(winner_faction, winner_agenda, loser_faction, loser_agenda) do
+    IO.inspect(winner_faction)
+    IO.inspect(winner_agenda)
+    IO.inspect(loser_faction)
+    IO.inspect(loser_agenda)
     if winner_faction == loser_faction and winner_agenda == loser_agenda do
       nil
     else
@@ -310,8 +312,8 @@ defmodule Agot.Analytica do
               deck ->
                 deck
               end
-            process_matchup({winner_agenda, winner_agenda, loser_agenda, loser_agenda}, {loser_agenda, loser_agenda, winner_agenda, winner_agenda}, winner_matchup, loser_matchup)
-            process_decks({winner_agenda, winner_agenda}, {loser_agenda, loser_agenda}, winner_deck, loser_deck)
+            process_matchup({winner_faction, winner_agenda, loser_faction, loser_agenda}, {loser_faction, loser_agenda, winner_faction, winner_agenda}, winner_matchup, loser_matchup)
+            process_decks({winner_faction, winner_agenda}, {loser_faction, loser_agenda}, winner_deck, loser_deck)
 
         winner_agenda === "The Free Folk" and loser_faction != nil ->
           winner_matchup =
@@ -342,8 +344,8 @@ defmodule Agot.Analytica do
               deck ->
                 deck
               end
-            process_matchup({winner_agenda, winner_agenda, loser_agenda, loser_agenda}, {loser_agenda, loser_agenda, winner_agenda, winner_agenda}, winner_matchup, loser_matchup)
-            process_decks({winner_agenda, winner_agenda}, {loser_agenda, loser_agenda}, winner_deck, loser_deck)
+            process_matchup({winner_agenda, winner_agenda, loser_faction, loser_agenda}, {loser_faction, loser_agenda, winner_agenda, winner_agenda}, winner_matchup, loser_matchup)
+            process_decks({winner_agenda, winner_agenda}, {loser_faction, loser_agenda}, winner_deck, loser_deck)
 
         winner_faction != nil and loser_agenda === "The Free Folk" ->
           winner_matchup =
@@ -374,8 +376,8 @@ defmodule Agot.Analytica do
               deck ->
                 deck
               end
-            process_matchup({winner_agenda, winner_agenda, loser_agenda, loser_agenda}, {loser_agenda, loser_agenda, winner_agenda, winner_agenda}, winner_matchup, loser_matchup)
-            process_decks({winner_agenda, winner_agenda}, {loser_agenda, loser_agenda}, winner_deck, loser_deck)
+            process_matchup({winner_faction, winner_agenda, loser_agenda, loser_agenda}, {loser_agenda, loser_agenda, winner_faction, winner_agenda}, winner_matchup, loser_matchup)
+            process_decks({winner_faction, winner_agenda}, {loser_agenda, loser_agenda}, winner_deck, loser_deck)
 
         winner_agenda === "The Free Folk" and loser_agenda === "The Free Folk" ->
           winner_matchup =
@@ -420,6 +422,8 @@ defmodule Agot.Analytica do
   end
 
   def process_decks(winner_tuple, loser_tuple, winner_deck, loser_deck) do
+    IO.inspect(winner_tuple)
+    IO.inspect(winner_deck)
     Cache.put_updated_deck(winner_tuple, %{id: winner_deck.id, num_wins: winner_deck.num_wins + 1, num_losses: winner_deck.num_losses})
     Cache.put_updated_deck(loser_tuple, %{id: loser_deck.id, num_wins: loser_deck.num_wins, num_losses: loser_deck.num_losses + 1})
   end
