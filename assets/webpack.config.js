@@ -20,7 +20,7 @@ module.exports = (env, options) => ({
   },
   entry: {
     app: "./js/app.js",
-    table: "./js/pages/players/table.js"
+    players: "./js/pages/players/index.js"
   },
   output: {
     filename: '[name].js',

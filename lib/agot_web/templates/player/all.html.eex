@@ -1,0 +1,53 @@
+<div class="header">
+  Players
+</div>
+<div class="playerFormWrapper">
+  <%= form_for @conn, Routes.player_path(@conn, :all), fn f -> %>
+    <div class="playerFormRow">
+      <%# label will go here %>
+      <%= text_input f, :name, placeholder: "Name" %>
+      <%= checkbox(f, :case) %> Case Specific
+      <%= number_input(f, :min_games, placeholder: "minimum games") %>
+    </div>
+    <div class="playerFormRow">
+      <div class="playerFormColumn">
+        <%# label will go here %>
+        <%= select(f, :sort, [Name: "name", Rating: "rating", Percent: "percent", Played: "played"]) %> Sort By
+      </div>
+      <div class="playerFormColumn">
+        <%# label will go here %>
+        <%= select(f, :num_rows, [25, 50, 75, 100]) %> Num Rows
+      </div>
+      <div class="playerFormColumn">
+        <%# label will go here %>
+        <%= radio_button(f, :asc, true, checked: true) %> Asc
+        <%= radio_button(f, :asc, false) %> Desc
+      </div>
+      <div class="playerFormColumn">
+        <%# label will go here %>
+        <%= number_input(f, :page_number, placeholder: "page number") %>
+      </div>
+    </div>
+    <%= submit "Search" %>
+  <% end %>
+</div>
+<div class="playerTableWrapper">
+  <table>
+    <thead>
+      <th class="tableName">Name</th>
+      <th class="tableRating">Rating</th>
+      <th class="tablePercent">Win Percent</th>
+      <th class="tablePlayed">Games Played</th>
+    </thead>
+    <tbody>
+      <%= for player <- @players do %>
+      <tr>
+        <td><a href="/player/<%= player.id %>"><%= player.name %></a></td>
+        <td><%= round(player.rating) %></td>
+        <td><%= Float.round(player.percent * 100, 1) %></td>
+        <td><%= player.played %></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

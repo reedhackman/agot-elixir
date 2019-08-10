@@ -1,0 +1,19 @@
+<h1>Decks - <%= @faction %></h1>
+<table>
+  <thead>
+    <tr>
+      <th>Agenda</th>
+      <th>Win Percent</th>
+      <th>Games Played</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for deck <- @decks do %>
+      <a href="/deck/<%= @faction %>/<%= deck.agenda %>"><tr>
+        <td><%= deck.agenda %></td>
+        <td><%= Float.round(deck.percent, 1) %></td>
+        <td><%= deck.played %></td>
+      </tr></a>
+    <% end %>
+  </tbody>
+</table>

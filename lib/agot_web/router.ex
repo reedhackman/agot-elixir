@@ -16,15 +16,16 @@ defmodule AgotWeb.Router do
   scope "/", AgotWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/", HomepageController, :index
 
-    get "/players/", PlayersController, :all
-    get "/players/table", PlayersController, :table
-    get "/players/:id", PlayersController, :specific
+    get "/player/", PlayerController, :all
+    post "/player/", PlayerController, :search
+    get "/player/table", PlayerController, :table
+    get "/player/:id", PlayerController, :specific
 
-    get "/decks/", DecksController, :all
-    get "/decks/:faction", DecksController, :faction
-    get "/decks/:faction/:agenda", DecksController, :agenda
+    get "/deck/", DeckController, :all
+    get "/deck/:faction", DeckController, :faction
+    get "/deck/:faction/:agenda", DeckController, :agenda
   end
 
   # Other scopes may use custom stacks.

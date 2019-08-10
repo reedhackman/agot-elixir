@@ -6,8 +6,36 @@ defmodule Agot.Analytica do
   alias Agot.Decks
   alias Agot.Misc
 
+  def process_from_test(data) do
+    Enum.each(data, fn x -> check_for_illegal(x) end)
+    exclude_map =
+      :ets.match(:exclude_cache, {:"_", :"$2"})
+      |> List.flatten()
+    exclude_list =
+      exclude_map
+      |> Enum.map(fn x -> x.tournament_id end)
+    Enum.each(data, fn x -> clean_and_process_game(x, exclude_list) end)
+    update_all_players()
+    update_all_decks()
+    update_all_matchups()
+  end
+
+  def process_from_file do
+    data = Poison.decode!(File.read!("./tjp"))
+    Enum.each(data, fn x -> check_for_illegal(x) end)
+    exclude_map =
+      :ets.match(:exclude_cache, {:"_", :"$2"})
+      |> List.flatten()
+    exclude_list =
+      exclude_map
+      |> Enum.map(fn x -> x.tournament_id end)
+    Enum.each(data, fn x -> clean_and_process_game(x, exclude_list) end)
+    update_all_players()
+    update_all_decks()
+    update_all_matchups()
+  end
+
   def process_all_games(data, page_number, page_length) do
-    #data = Poison.decode!(File.read!("./tjp"))
     Enum.each(data, fn x -> check_for_illegal(x) end)
     exclude_map =
       :ets.match(:exclude_cache, {:"_", :"$2"})
@@ -29,15 +57,15 @@ defmodule Agot.Analytica do
   end
 
   def update_all_decks do
-    :ets.match(:updated_decks_cache, {:"_", :"$2"})
+    :ets.match(:updated_decks_cache, {:"1", :"$2"})
     |> List.flatten()
-    |> Enum.each(fn x -> update_deck_by_id(x) end)
+    |> Enum.each(fn x -> update_deck_by_id(List.first(x), List.last(x)) end)
   end
 
   def update_all_matchups do
-    :ets.match(:updated_matchups_cache, {:"_", :"$2"})
+    :ets.match(:updated_matchups_cache, {:"1", :"$2"})
     |> List.flatten()
-    |> Enum.each(fn x -> update_matchup_by_id(x) end)
+    |> Enum.each(fn x -> update_matchup_by_id(List.first(x), List.last(x)) end)
   end
 
   def update_player(attrs) do
@@ -46,16 +74,16 @@ defmodule Agot.Analytica do
     Cache.delete_updated_player(attrs.id)
   end
 
-  def update_deck_by_id(attrs) do
+  def update_deck_by_id(deck_tuple, attrs) do
     Decks.update_deck_by_id(attrs.id, attrs)
-    Cache.put_deck({attrs.faction, attrs.agenda}, attrs)
-    Cache.delete_updated_deck({attrs.faction, attrs.agenda})
+    Cache.put_deck(deck_tuple, attrs)
+    Cache.delete_updated_deck(deck_tuple)
   end
 
-  def update_matchup_by_id(attrs) do
+  def update_matchup_by_id(matchup_tuple, attrs) do
     Matchups.update_matchup_by_id(attrs.id, attrs)
-    Cache.put_matchup({attrs.faction, attrs.agenda, attrs.oppfaction, attrs.oppagenda}, attrs)
-    Cache.delete_updated_matchup({attrs.faction, attrs.agenda, attrs.oppfaction, attrs.oppagenda})
+    Cache.put_matchup(matchup_tuple, attrs)
+    Cache.delete_updated_matchup(matchup_tuple)
   end
 
   def update_position(attrs) do
@@ -387,13 +415,13 @@ defmodule Agot.Analytica do
   end
 
   def process_matchup(winner_matchup, loser_matchup) do
-    Cache.put_updated_matchup({winner_matchup.faction, winner_matchup.agenda, loser_matchup.faction, loser_matchup.agenda}, %{id: winner_matchup.id, faction: winner_matchup.faction, agenda: winner_matchup.agenda, oppfaction: winner_matchup.oppfaction, oppagenda: winner_matchup.oppagenda, wins: winner_matchup.wins + 1, losses: winner_matchup.losses})
-    Cache.put_updated_matchup({loser_matchup.faction, loser_matchup.agenda, winner_matchup.faction, winner_matchup.agenda}, %{id: loser_matchup.id, faction: loser_matchup.faction, agenda: loser_matchup.agenda, oppfaction: loser_matchup.oppfaction, oppagenda: loser_matchup.oppagenda, wins: loser_matchup.wins, losses: loser_matchup.losses + 1})
+    Cache.put_updated_matchup({winner_matchup.faction, winner_matchup.agenda, loser_matchup.faction, loser_matchup.agenda}, %{id: winner_matchup.id, num_wins: winner_matchup.num_wins + 1, num_losses: winner_matchup.num_losses})
+    Cache.put_updated_matchup({loser_matchup.faction, loser_matchup.agenda, winner_matchup.faction, winner_matchup.agenda}, %{id: loser_matchup.id, num_wins: loser_matchup.num_wins, num_losses: loser_matchup.num_losses + 1})
   end
 
   def process_decks(winner_deck, loser_deck) do
-    Cache.put_updated_deck({winner_deck.faction, winner_deck.agenda}, %{id: winner_deck.id, faction: winner_deck.faction, agenda: winner_deck.agenda, wins: winner_deck.wins + 1, losses: winner_deck.losses})
-    Cache.put_updated_deck({loser_deck.faction, loser_deck.agenda}, %{id: loser_deck.id, faction: loser_deck.faction, agenda: loser_deck.agenda, wins: loser_deck.wins, losses: loser_deck.losses + 1})
+    Cache.put_updated_deck({winner_deck.faction, winner_deck.agenda}, %{id: winner_deck.id, num_wins: winner_deck.num_wins + 1, num_losses: winner_deck.num_losses})
+    Cache.put_updated_deck({loser_deck.faction, loser_deck.agenda}, %{id: loser_deck.id, num_wins: loser_deck.num_wins, num_losses: loser_deck.num_losses + 1})
   end
 
   def rate(winner, loser) do
@@ -402,8 +430,8 @@ defmodule Agot.Analytica do
     e_l = 1 / (1 + :math.pow(10, (winner.rating - loser.rating) / 400))
     r_w = winner.rating + k * (1 - e_w)
     r_l = loser.rating + k * (0 - e_l)
-    Cache.put_updated_player(winner.id, %{id: winner.id, name: winner.name, num_wins: winner.num_wins + 1, num_losses: winner.num_losses, rating: r_w})
-    Cache.put_updated_player(loser.id, %{id: loser.id, name: loser.name, num_wins: loser.num_wins, num_losses: loser.num_losses + 1, rating: r_l})
+    Cache.put_updated_player(winner.id, %{id: winner.id, num_wins: winner.num_wins + 1, num_losses: winner.num_losses, rating: r_w})
+    Cache.put_updated_player(loser.id, %{id: loser.id, num_wins: loser.num_wins, num_losses: loser.num_losses + 1, rating: r_l})
   end
 
   def get_player(id, name) do
@@ -422,10 +450,10 @@ defmodule Agot.Analytica do
     case Cache.get_deck({faction, agenda}) do
       nil ->
         deck = Decks.get_deck(faction, agenda)
-        Cache.put_updated_deck({faction, agenda}, %{id: deck.id, faction: deck.faction, agenda: deck.agenda, wins: deck.wins, losses: deck.losses})
+        Cache.put_updated_deck({faction, agenda}, %{id: deck.id, faction: deck.faction, agenda: deck.agenda, num_wins: deck.num_wins, num_losses: deck.num_losses})
         deck
       deck ->
-        Cache.put_updated_deck({faction, agenda}, %{id: deck.id, faction: deck.faction, agenda: deck.agenda, wins: deck.wins, losses: deck.losses})
+        Cache.put_updated_deck({faction, agenda}, %{id: deck.id, faction: deck.faction, agenda: deck.agenda, num_wins: deck.num_wins, num_losses: deck.num_losses})
         deck
     end
   end
@@ -434,10 +462,10 @@ defmodule Agot.Analytica do
     case Cache.get_matchup({faction, agenda, oppfaction, oppagenda}) do
       nil ->
         matchup = Matchups.get_matchup(faction, agenda, oppfaction, oppagenda)
-        Cache.put_updated_matchup({faction, agenda, oppfaction, oppagenda}, %{id: matchup.id, faction: matchup.faction, agenda: matchup.agenda, oppfaction: matchup.oppfaction, oppagenda: matchup.oppagenda, wins: matchup.wins, losses: matchup.losses})
+        Cache.put_updated_matchup({faction, agenda, oppfaction, oppagenda}, %{id: matchup.id, faction: matchup.faction, agenda: matchup.agenda, oppfaction: matchup.oppfaction, oppagenda: matchup.oppagenda, num_wins: matchup.num_wins, num_losses: matchup.num_losses})
         matchup
       matchup ->
-        Cache.put_updated_matchup({faction, agenda, oppfaction, oppagenda}, %{id: matchup.id, faction: matchup.faction, agenda: matchup.agenda, oppfaction: matchup.oppfaction, oppagenda: matchup.oppagenda, wins: matchup.wins, losses: matchup.losses})
+        Cache.put_updated_matchup({faction, agenda, oppfaction, oppagenda}, %{id: matchup.id, faction: matchup.faction, agenda: matchup.agenda, oppfaction: matchup.oppfaction, oppagenda: matchup.oppagenda, num_wins: matchup.num_wins, num_losses: matchup.num_losses})
         matchup
     end
   end

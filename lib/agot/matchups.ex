@@ -7,12 +7,21 @@ defmodule Agot.Matchups do
   import Ecto.Query
 
   def create_matchup(faction, agenda, oppfaction, oppagenda) do
-    attrs = %{faction: faction, agenda: agenda, oppfaction: oppfaction, oppagenda: oppagenda, wins: 0, losses: 0}
+    attrs = %{
+      faction: faction,
+      agenda: agenda,
+      oppfaction: oppfaction,
+      oppagenda: oppagenda,
+      num_wins: 0,
+      num_losses: 0
+    }
+
     matchup =
       %Matchup{}
       |> Matchup.changeset(attrs)
       |> Repo.insert()
       |> Kernel.elem(1)
+
     Cache.put_matchup({faction, agenda, oppfaction, oppagenda}, matchup)
     matchup
   end
@@ -22,20 +31,37 @@ defmodule Agot.Matchups do
       cond do
         agenda == nil and oppagenda == nil ->
           from game in Game,
-          where: (game.winner_faction == ^faction and is_nil(game.winner_agenda) and game.loser_faction == ^oppfaction and is_nil(game.loser_agenda)) or (game.loser_faction == ^faction and is_nil(game.loser_agenda) and game.winner_faction == ^oppfaction and is_nil(game.winner_agenda))
+            where:
+              (game.winner_faction == ^faction and is_nil(game.winner_agenda) and
+                 game.loser_faction == ^oppfaction and is_nil(game.loser_agenda)) or
+                (game.loser_faction == ^faction and is_nil(game.loser_agenda) and
+                   game.winner_faction == ^oppfaction and is_nil(game.winner_agenda))
 
         agenda == nil ->
           from game in Game,
-          where: (game.winner_faction == ^faction and is_nil(game.winner_agenda) and game.loser_faction == ^oppfaction and game.loser_agenda == ^oppagenda) or (game.loser_faction == ^faction and game.loser_agenda == ^agenda and game.winner_faction == ^oppfaction and is_nil(game.winner_agenda))
+            where:
+              (game.winner_faction == ^faction and is_nil(game.winner_agenda) and
+                 game.loser_faction == ^oppfaction and game.loser_agenda == ^oppagenda) or
+                (game.loser_faction == ^faction and game.loser_agenda == ^agenda and
+                   game.winner_faction == ^oppfaction and is_nil(game.winner_agenda))
 
         oppagenda == nil ->
           from game in Game,
-          where: (game.winner_faction == ^faction and game.winner_agenda == ^agenda and game.loser_faction == ^oppfaction and is_nil(game.loser_agenda)) or (game.loser_faction == ^faction and is_nil(game.loser_agenda) and game.winner_faction == ^oppfaction and game.winner_agenda == ^oppagenda)
+            where:
+              (game.winner_faction == ^faction and game.winner_agenda == ^agenda and
+                 game.loser_faction == ^oppfaction and is_nil(game.loser_agenda)) or
+                (game.loser_faction == ^faction and is_nil(game.loser_agenda) and
+                   game.winner_faction == ^oppfaction and game.winner_agenda == ^oppagenda)
 
         true ->
           from game in Game,
-          where: (game.winner_faction == ^faction and game.winner_agenda == ^agenda and game.loser_faction == ^oppfaction and game.loser_agenda == ^oppagenda) or (game.loser_faction == ^faction and game.loser_agenda == ^agenda and game.winner_faction == ^oppfaction and game.winner_agenda == ^oppagenda)
+            where:
+              (game.winner_faction == ^faction and game.winner_agenda == ^agenda and
+                 game.loser_faction == ^oppfaction and game.loser_agenda == ^oppagenda) or
+                (game.loser_faction == ^faction and game.loser_agenda == ^agenda and
+                   game.winner_faction == ^oppfaction and game.winner_agenda == ^oppagenda)
       end
+
     Repo.all(query)
   end
 
@@ -44,23 +70,33 @@ defmodule Agot.Matchups do
       cond do
         agenda == nil and oppagenda == nil ->
           from matchup in Matchup,
-          where: matchup.faction == ^faction and is_nil(matchup.agenda) and matchup.oppfaction == ^oppfaction and is_nil(matchup.oppagenda)
+            where:
+              matchup.faction == ^faction and is_nil(matchup.agenda) and
+                matchup.oppfaction == ^oppfaction and is_nil(matchup.oppagenda)
 
         agenda == nil ->
           from matchup in Matchup,
-          where: matchup.faction == ^faction and is_nil(matchup.agenda) and matchup.oppfaction == ^oppfaction and matchup.oppagenda == ^oppagenda
+            where:
+              matchup.faction == ^faction and is_nil(matchup.agenda) and
+                matchup.oppfaction == ^oppfaction and matchup.oppagenda == ^oppagenda
 
         oppagenda == nil ->
           from matchup in Matchup,
-          where: matchup.faction == ^faction and matchup.agenda == ^agenda and matchup.oppfaction == ^oppfaction and is_nil(matchup.oppagenda)
+            where:
+              matchup.faction == ^faction and matchup.agenda == ^agenda and
+                matchup.oppfaction == ^oppfaction and is_nil(matchup.oppagenda)
 
         true ->
           from matchup in Matchup,
-          where: matchup.faction == ^faction and matchup.agenda == ^agenda and matchup.oppfaction == ^oppfaction and matchup.oppagenda == ^oppagenda
+            where:
+              matchup.faction == ^faction and matchup.agenda == ^agenda and
+                matchup.oppfaction == ^oppfaction and matchup.oppagenda == ^oppagenda
       end
+
     case Repo.one(query) do
       nil ->
         create_matchup(faction, agenda, oppfaction, oppagenda)
+
       matchup ->
         Cache.put_matchup({faction, agenda, oppfaction, oppagenda}, matchup)
         matchup

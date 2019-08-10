@@ -7,8 +7,8 @@ defmodule Agot.Decks.Matchup do
     :agenda,
     :oppfaction,
     :oppagenda,
-    :wins,
-    :losses
+    :num_wins,
+    :num_losses
   ]
 
   @required_fields [
@@ -21,8 +21,8 @@ defmodule Agot.Decks.Matchup do
     field :agenda, :string
     field :oppfaction, :string
     field :oppagenda, :string
-    field :wins, :integer
-    field :losses, :integer
+    field :num_wins, :integer
+    field :num_losses, :integer
 
     timestamps()
   end

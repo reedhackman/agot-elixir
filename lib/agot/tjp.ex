@@ -21,11 +21,10 @@ defmodule Agot.Tjp do
 
   def check_all_remaining_incomplete do
     with incomplete <- Games.list_incomplete() do
-      tournaments =
-        incomplete
-        |> Enum.map(fn x -> x.tournament_id end)
-        |> Enum.uniq()
-        |> Enum.each(fn x -> check_tjp_tournament_game(x, incomplete) end)
+      incomplete
+      |> Enum.map(fn x -> x.tournament_id end)
+      |> Enum.uniq()
+      |> Enum.each(fn x -> check_tjp_tournament_game(x, incomplete) end)
     end
   end
 
@@ -41,7 +40,6 @@ defmodule Agot.Tjp do
 
   def check_tournament_age(tournament, time) do
     end_time = tournament["end_time"]
-    IO.inspect(tournament)
     if end_time != nil do
       end_age = NaiveDateTime.diff(time, NaiveDateTime.from_iso8601!(end_time))
       if end_age > (60 * 60 * 24 * 31) do

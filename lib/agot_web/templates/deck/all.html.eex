@@ -1,0 +1,190 @@
+<h1>Decks</h1>
+<div class="">
+  <a href="/deck/Baratheon"><h2>Baratheon</h2></a>
+  <table>
+    <thead>
+      <tr>
+        <th>Agenda</th>
+        <th>Win Percent</th>
+        <th>Games Played</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for deck <- @baratheon do %>
+      <a href="/deck/Baratheon/<%= deck.agenda %>"><tr>
+        <td><%= deck.agenda %></td>
+        <td><%= Float.round(deck.percent, 1) %></td>
+        <td><%= deck.played %></td>
+      </tr></a>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<div class="">
+  <a href="/deck/Greyjoy"><h2>Greyjoy</h2></a>
+  <table>
+    <thead>
+      <tr>
+        <th>Agenda</th>
+        <th>Win Percent</th>
+        <th>Games Played</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for deck <- @greyjoy do %>
+      <a href="/deck/Greyjoy/<%= deck.agenda %>"><tr>
+        <td><%= deck.agenda %></td>
+        <td><%= Float.round(deck.percent, 1) %></td>
+        <td><%= deck.played %></td>
+      </tr></a>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<div class="">
+  <a href="/deck/Lannister"><h2>Lannister</h2></a>
+  <table>
+    <thead>
+      <tr>
+        <th>Agenda</th>
+        <th>Win Percent</th>
+        <th>Games Played</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for deck <- @lannister do %>
+      <a href="/deck/Lannister/<%= deck.agenda %>"><tr>
+        <td><%= deck.agenda %></td>
+        <td><%= Float.round(deck.percent, 1) %></td>
+        <td><%= deck.played %></td>
+      </tr></a>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<div class="">
+  <a href="/deck/Martell"><h2>Martell</h2></a>
+  <table>
+    <thead>
+      <tr>
+        <th>Agenda</th>
+        <th>Win Percent</th>
+        <th>Games Played</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for deck <- @martell do %>
+      <a href="/deck/Martell/<%= deck.agenda %>"><tr>
+        <td><%= deck.agenda %></td>
+        <td><%= Float.round(deck.percent, 1) %></td>
+        <td><%= deck.played %></td>
+      </tr></a>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<div class="">
+  <a href="/deck/Stark"><h2>Stark</h2></a>
+  <table>
+    <thead>
+      <tr>
+        <th>Agenda</th>
+        <th>Win Percent</th>
+        <th>Games Played</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for deck <- @stark do %>
+      <a href="/deck/Stark/<%= deck.agenda %>"><tr>
+        <td><%= deck.agenda %></td>
+        <td><%= Float.round(deck.percent, 1) %></td>
+        <td><%= deck.played %></td>
+      </tr></a>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<div class="">
+  <a href="/deck/Targaryen"><h2>Targaryen</h2></a>
+  <table>
+    <thead>
+      <tr>
+        <th>Agenda</th>
+        <th>Win Percent</th>
+        <th>Games Played</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for deck <- @targaryen do %>
+      <a href="/deck/Targaryen/<%= deck.agenda %>"><tr>
+        <td><%= deck.agenda %></td>
+        <td><%= Float.round(deck.percent, 1) %></td>
+        <td><%= deck.played %></td>
+      </tr></a>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<div class="">
+  <a href="/deck/Night's Watch"><h2>Night's Watch</h2></a>
+  <table>
+    <thead>
+      <tr>
+        <th>Agenda</th>
+        <th>Win Percent</th>
+        <th>Games Played</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for deck <- @nights_watch do %>
+      <a href="/deck/Night's Watch/<%= deck.agenda %>"><tr>
+        <td><%= deck.agenda %></td>
+        <td><%= Float.round(deck.percent, 1) %></td>
+        <td><%= deck.played %></td>
+      </tr></a>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<div class="">
+  <a href="/deck/Tyrell"><h2>Tyrell</h2></a>
+  <table>
+    <thead>
+      <tr>
+        <th>Agenda</th>
+        <th>Win Percent</th>
+        <th>Games Played</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for deck <- @tyrell do %>
+      <a href="/deck/Tyrell/<%= deck.agenda %>"><tr>
+        <td><%= deck.agenda %></td>
+        <td><%= Float.round(deck.percent, 1) %></td>
+        <td><%= deck.played %></td>
+      </tr></a>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<div class="">
+  <a href="/deck/The Free Folk"><h2>The Free Folk</h2></a>
+  <table>
+    <thead>
+      <tr>
+        <th>Agenda</th>
+        <th>Win Percent</th>
+        <th>Games Played</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for deck <- @free_folk do %>
+      <a href="/deck/The Free Folk/<%= deck.agenda %>"><tr>
+        <td><%= deck.agenda %></td>
+        <td><%= Float.round(deck.percent, 1) %></td>
+        <td><%= deck.played %></td>
+      </tr></a>
+      <% end %>
+    </tbody>
+  </table>
+</div>

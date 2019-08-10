@@ -7,6 +7,8 @@ defmodule Agot.Repo.Migrations.CreatePlayersTable do
       add :num_wins, :integer
       add :num_losses, :integer
       add :rating, :float
+      add :percent, :float
+      add :played, :integer
 
       timestamps()
     end

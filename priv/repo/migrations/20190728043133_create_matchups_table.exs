@@ -7,8 +7,8 @@ defmodule Agot.Repo.Migrations.CreateMatchupsTable do
       add :agenda, :string
       add :oppfaction, :string
       add :oppagenda, :string
-      add :wins, :integer
-      add :losses, :integer
+      add :num_wins, :integer
+      add :num_losses, :integer
 
       timestamps()
     end

@@ -1,0 +1,6 @@
+<p>Name: <%= @player.name %></p>
+<p>Rating: <%= round(@player.rating) %></p>
+<p>Wins: <%= @player.num_wins %></p>
+<p>Losses: <%= @player.num_losses %></p>
+<%= ReactPhoenix.ClientSide.react_component("Components.PlayerOpponents", %{wins: @wins, losses: @losses}) %>
+<%= ReactPhoenix.ClientSide.react_component("Components.PlayerDecks", %{wins: @wins, losses: @losses}) %>

@@ -1,4 +1,0 @@
-<p>Name: <%= @player.name %></p>
-<p>Rating: <%= @player.rating %></p>
-<p>Wins: <%= @player.num_wins %></p>
-<p>Losses: <%= @player.num_losses %></p>
