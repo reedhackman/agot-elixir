@@ -273,10 +273,10 @@ defmodule Agot.Analytica do
         tournament_date: game.misc.tournament_date
       }, game.winner.id, game.loser.id)
     rate(winner, loser)
-    process_decks(game.winner.faction, game.winner.agenda, game.loser.faction, game.loser.agenda)
+    process_decks_and_matchups(game.winner.faction, game.winner.agenda, game.loser.faction, game.loser.agenda)
   end
 
-  def process_decks(winner_faction, winner_agenda, loser_faction, loser_agenda) do
+  def process_decks_and_matchups(winner_faction, winner_agenda, loser_faction, loser_agenda) do
     if winner_faction == loser_faction and winner_agenda == loser_agenda do
       nil
     else
@@ -450,10 +450,10 @@ defmodule Agot.Analytica do
     case Cache.get_deck({faction, agenda}) do
       nil ->
         deck = Decks.get_deck(faction, agenda)
-        Cache.put_updated_deck({faction, agenda}, %{id: deck.id, faction: deck.faction, agenda: deck.agenda, num_wins: deck.num_wins, num_losses: deck.num_losses})
+        Cache.put_updated_deck({faction, agenda}, %{id: deck.id, num_wins: deck.num_wins, num_losses: deck.num_losses})
         deck
       deck ->
-        Cache.put_updated_deck({faction, agenda}, %{id: deck.id, faction: deck.faction, agenda: deck.agenda, num_wins: deck.num_wins, num_losses: deck.num_losses})
+        Cache.put_updated_deck({faction, agenda}, %{id: deck.id, num_wins: deck.num_wins, num_losses: deck.num_losses})
         deck
     end
   end
@@ -462,10 +462,10 @@ defmodule Agot.Analytica do
     case Cache.get_matchup({faction, agenda, oppfaction, oppagenda}) do
       nil ->
         matchup = Matchups.get_matchup(faction, agenda, oppfaction, oppagenda)
-        Cache.put_updated_matchup({faction, agenda, oppfaction, oppagenda}, %{id: matchup.id, faction: matchup.faction, agenda: matchup.agenda, oppfaction: matchup.oppfaction, oppagenda: matchup.oppagenda, num_wins: matchup.num_wins, num_losses: matchup.num_losses})
+        Cache.put_updated_matchup({faction, agenda, oppfaction, oppagenda}, %{id: matchup.id, num_wins: matchup.num_wins, num_losses: matchup.num_losses})
         matchup
       matchup ->
-        Cache.put_updated_matchup({faction, agenda, oppfaction, oppagenda}, %{id: matchup.id, faction: matchup.faction, agenda: matchup.agenda, oppfaction: matchup.oppfaction, oppagenda: matchup.oppagenda, num_wins: matchup.num_wins, num_losses: matchup.num_losses})
+        Cache.put_updated_matchup({faction, agenda, oppfaction, oppagenda}, %{id: matchup.id, num_wins: matchup.num_wins, num_losses: matchup.num_losses})
         matchup
     end
   end
