@@ -57,13 +57,13 @@ defmodule Agot.Analytica do
   end
 
   def update_all_decks do
-    :ets.match(:updated_decks_cache, {:"1", :"$2"})
+    :ets.match(:updated_decks_cache, {:"$1", :"$2"})
     |> List.flatten()
     |> Enum.each(fn x -> update_deck_by_id(List.first(x), List.last(x)) end)
   end
 
   def update_all_matchups do
-    :ets.match(:updated_matchups_cache, {:"1", :"$2"})
+    :ets.match(:updated_matchups_cache, {:"$1", :"$2"})
     |> List.flatten()
     |> Enum.each(fn x -> update_matchup_by_id(List.first(x), List.last(x)) end)
   end
