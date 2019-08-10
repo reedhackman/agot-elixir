@@ -275,10 +275,6 @@ defmodule Agot.Analytica do
   end
 
   def process_decks_and_matchups(winner_faction, winner_agenda, loser_faction, loser_agenda) do
-    IO.inspect(winner_faction)
-    IO.inspect(winner_agenda)
-    IO.inspect(loser_faction)
-    IO.inspect(loser_agenda)
     if winner_faction == loser_faction and winner_agenda == loser_agenda do
       nil
     else
