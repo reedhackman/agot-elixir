@@ -310,8 +310,8 @@ defmodule Agot.Analytica do
               deck ->
                 deck
               end
-          process_matchup(winner_matchup, loser_matchup)
-          process_decks(winner_deck, loser_deck)
+            process_matchup({winner_agenda, winner_agenda, loser_agenda, loser_agenda}, {loser_agenda, loser_agenda, winner_agenda, winner_agenda}, winner_matchup, loser_matchup)
+            process_decks({winner_agenda, winner_agenda}, {loser_agenda, loser_agenda}, winner_deck, loser_deck)
 
         winner_agenda === "The Free Folk" and loser_faction != nil ->
           winner_matchup =
@@ -342,8 +342,8 @@ defmodule Agot.Analytica do
               deck ->
                 deck
               end
-          process_matchup(winner_matchup, loser_matchup)
-          process_decks(winner_deck, loser_deck)
+            process_matchup({winner_agenda, winner_agenda, loser_agenda, loser_agenda}, {loser_agenda, loser_agenda, winner_agenda, winner_agenda}, winner_matchup, loser_matchup)
+            process_decks({winner_agenda, winner_agenda}, {loser_agenda, loser_agenda}, winner_deck, loser_deck)
 
         winner_faction != nil and loser_agenda === "The Free Folk" ->
           winner_matchup =
@@ -374,8 +374,8 @@ defmodule Agot.Analytica do
               deck ->
                 deck
               end
-          process_matchup(winner_matchup, loser_matchup)
-          process_decks(winner_deck, loser_deck)
+            process_matchup({winner_agenda, winner_agenda, loser_agenda, loser_agenda}, {loser_agenda, loser_agenda, winner_agenda, winner_agenda}, winner_matchup, loser_matchup)
+            process_decks({winner_agenda, winner_agenda}, {loser_agenda, loser_agenda}, winner_deck, loser_deck)
 
         winner_agenda === "The Free Folk" and loser_agenda === "The Free Folk" ->
           winner_matchup =
@@ -406,22 +406,22 @@ defmodule Agot.Analytica do
               deck ->
                 deck
               end
-          process_matchup(winner_matchup, loser_matchup)
-          process_decks(winner_deck, loser_deck)
+          process_matchup({winner_agenda, winner_agenda, loser_agenda, loser_agenda}, {loser_agenda, loser_agenda, winner_agenda, winner_agenda}, winner_matchup, loser_matchup)
+          process_decks({winner_agenda, winner_agenda}, {loser_agenda, loser_agenda}, winner_deck, loser_deck)
 
         true -> nil
       end
     end
   end
 
-  def process_matchup(winner_matchup, loser_matchup) do
-    Cache.put_updated_matchup({winner_matchup.faction, winner_matchup.agenda, loser_matchup.faction, loser_matchup.agenda}, %{id: winner_matchup.id, num_wins: winner_matchup.num_wins + 1, num_losses: winner_matchup.num_losses})
-    Cache.put_updated_matchup({loser_matchup.faction, loser_matchup.agenda, winner_matchup.faction, winner_matchup.agenda}, %{id: loser_matchup.id, num_wins: loser_matchup.num_wins, num_losses: loser_matchup.num_losses + 1})
+  def process_matchup(winner_tuple, loser_tuple, winner_matchup, loser_matchup) do
+    Cache.put_updated_matchup(winner_tuple, %{id: winner_matchup.id, num_wins: winner_matchup.num_wins + 1, num_losses: winner_matchup.num_losses})
+    Cache.put_updated_matchup(loser_tuple, %{id: loser_matchup.id, num_wins: loser_matchup.num_wins, num_losses: loser_matchup.num_losses + 1})
   end
 
-  def process_decks(winner_deck, loser_deck) do
-    Cache.put_updated_deck({winner_deck.faction, winner_deck.agenda}, %{id: winner_deck.id, num_wins: winner_deck.num_wins + 1, num_losses: winner_deck.num_losses})
-    Cache.put_updated_deck({loser_deck.faction, loser_deck.agenda}, %{id: loser_deck.id, num_wins: loser_deck.num_wins, num_losses: loser_deck.num_losses + 1})
+  def process_decks(winner_tuple, loser_tuple, winner_deck, loser_deck) do
+    Cache.put_updated_deck(winner_tuple, %{id: winner_deck.id, num_wins: winner_deck.num_wins + 1, num_losses: winner_deck.num_losses})
+    Cache.put_updated_deck(loser_tuple, %{id: loser_deck.id, num_wins: loser_deck.num_wins, num_losses: loser_deck.num_losses + 1})
   end
 
   def rate(winner, loser) do
