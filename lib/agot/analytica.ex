@@ -422,8 +422,6 @@ defmodule Agot.Analytica do
   end
 
   def process_decks(winner_tuple, loser_tuple, winner_deck, loser_deck) do
-    IO.inspect(winner_tuple)
-    IO.inspect(winner_deck)
     Cache.put_updated_deck(winner_tuple, %{id: winner_deck.id, num_wins: winner_deck.num_wins + 1, num_losses: winner_deck.num_losses})
     Cache.put_updated_deck(loser_tuple, %{id: loser_deck.id, num_wins: loser_deck.num_wins, num_losses: loser_deck.num_losses + 1})
   end
