@@ -35,4 +35,6 @@ npm-debug.log
 
 mix.lock
 package-lock.json
-tjp.txt
+page.txt
+position.txt
+data.txt

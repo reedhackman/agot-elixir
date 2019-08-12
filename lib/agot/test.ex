@@ -1,15 +1,18 @@
 defmodule Agot.Test do
-  def check_games_by_page(list \\ [], page \\ 1, i \\ 0) do
+  def scrape(list \\ [], page \\ 1, i \\ 0) do
     url = "https://thejoustingpavilion.com/api/v3/games?page=" <> Integer.to_string(page)
 
     case HTTPoison.get(url) do
       {:ok, %{status_code: 200, body: body}} ->
         data = Poison.decode!(body)
+        IO.inspect(url <> " length " <> Integer.to_string(length(data)))
 
-        if page !== 4 do
-          check_games_by_page(list ++ data, page + 1)
+        if length(data) === 50 do
+          scrape(list ++ data, page + 1)
         else
-          Agot.Analytica.process_from_test(list ++ data)
+          File.write("page.txt", Poison.encode!(page))
+          File.write("position.txt", Poison.encode!(length(data)))
+          File.write("data.txt", Poison.encode!(list ++ data))
         end
     end
   end

@@ -58,11 +58,11 @@ defmodule Agot.Decks do
     Repo.all(Deck)
   end
 
-  def top_ten_decks do
+  def top_ten_quarter do
     query =
       from deck in Deck,
-        where: deck.played >= 30,
-        order_by: deck.percent,
+        where: deck.last_ninety_played >= 30,
+        order_by: [desc: deck.last_ninety_percent],
         limit: 10
 
     Repo.all(query)
@@ -113,6 +113,12 @@ defmodule Agot.Decks do
   def update_deck_by_id(deck_id, attrs) do
     Repo.one(from deck in Deck, where: deck.id == ^deck_id)
     |> Deck.update_changeset(attrs)
+    |> Repo.update()
+  end
+
+  def update_ninety(deck, attrs) do
+    deck
+    |> Deck.ninety_changeset(attrs)
     |> Repo.update()
   end
 end

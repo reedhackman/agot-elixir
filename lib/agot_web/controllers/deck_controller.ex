@@ -1,6 +1,7 @@
 defmodule AgotWeb.DeckController do
   use AgotWeb, :controller
   alias Agot.Decks
+  alias Agot.Games
 
   def all(conn, _params) do
     stark = Decks.top_five_faction("Stark")
@@ -34,5 +35,21 @@ defmodule AgotWeb.DeckController do
   def agenda(conn, %{"faction" => faction, "agenda" => agenda}) do
     decks = Decks.list_matchups_for_deck(faction, agenda)
     render(conn, "agenda.html", decks: decks)
+  end
+
+  def react(conn, _params) do
+    games =
+      Games.list_games_with_agendas()
+      |> Enum.map(fn x ->
+        %{
+          winner_faction: x.winner_faction,
+          winner_agenda: x.winner_agenda,
+          loser_faction: x.loser_faction,
+          loser_agenda: x.loser_agenda,
+          date: x.tournament_date
+        }
+      end)
+
+    render(conn, "react.html", %{games: games, script_name: "decks"})
   end
 end

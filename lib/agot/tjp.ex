@@ -12,11 +12,22 @@ defmodule Agot.Tjp do
     {:ok, state}
   end
 
-  def handle_info(:work, state) do
+  def handle_info(:tjp, state) do
     check_all_incomplete_age()
     check_all_remaining_incomplete()
     check_tjp()
     {:noreply, state}
+  end
+
+  def handle_info(:daily, state) do
+    daily_tasks()
+    {:noreply, state}
+  end
+
+  def daily_tasks do
+    Analytica.update_all_decks_three_months()
+    Analytica.update_daily_cache()
+    Process.send_after(self(), :daily, 1000 * 60 * 60 * 24)
   end
 
   def check_all_remaining_incomplete do
@@ -30,7 +41,7 @@ defmodule Agot.Tjp do
 
   def check_all_incomplete_age do
     with incomplete <- Games.list_incomplete(),
-         current_time <- NaiveDateTime.utc_now do
+         current_time <- NaiveDateTime.utc_now() do
       incomplete
       |> Enum.map(fn x -> x.tournament_id end)
       |> Enum.uniq()
@@ -40,24 +51,30 @@ defmodule Agot.Tjp do
 
   def check_tournament_age(tournament, time) do
     end_time = tournament["end_time"]
+
     if end_time != nil do
       end_age = NaiveDateTime.diff(time, NaiveDateTime.from_iso8601!(end_time))
-      if end_age > (60 * 60 * 24 * 31) do
+
+      if end_age > 60 * 60 * 24 * 31 do
         Games.delete_incomplete_tournament(tournament["tournament_id"])
       end
     else
       start_age = NaiveDateTime.diff(time, NaiveDateTime.from_iso8601!(tournament["start_time"]))
-      if start_age > (60 * 60 * 24 * 365) do
+
+      if start_age > 60 * 60 * 24 * 365 do
         Games.delete_incomplete_tournament(tournament["tournament_id"])
       end
     end
   end
 
   def check_tjp_tournament_age(id, time) do
-    url = "http://thejoustingpavilion.com/api/v3/tournaments?tournament_id=" <> Integer.to_string(id)
-    case HTTPoison.get(url, [], [follow_redirect: true]) do
+    url =
+      "http://thejoustingpavilion.com/api/v3/tournaments?tournament_id=" <> Integer.to_string(id)
+
+    case HTTPoison.get(url, [], follow_redirect: true) do
       {:ok, %{status_code: 200, body: body}} ->
         IO.inspect(url)
+
         Poison.decode!(body)
         |> List.first()
         |> check_tournament_age(time)
@@ -65,14 +82,19 @@ defmodule Agot.Tjp do
   end
 
   def check_tjp_tournament_game(id, incomplete_games, list \\ [], page \\ 1) do
-    url = "http://thejoustingpavilion.com/api/v3/games?tournament_id=" <> Integer.to_string(id) <> "&page=" <> Integer.to_string(page)
-    case HTTPoison.get(url, [], [follow_redirect: true]) do
+    url =
+      "http://thejoustingpavilion.com/api/v3/games?tournament_id=" <>
+        Integer.to_string(id) <> "&page=" <> Integer.to_string(page)
+
+    case HTTPoison.get(url, [], follow_redirect: true) do
       {:ok, %{status_code: 200, body: body}} ->
         data = Poison.decode!(body)
         IO.inspect(url)
+
         if length(data) === 50 do
           check_tjp_tournament_game(id, incomplete_games, list ++ data, page + 1)
         end
+
         check_incomplete_games_by_tournament(list ++ data, id)
     end
   end
@@ -84,6 +106,7 @@ defmodule Agot.Tjp do
 
   def check_incomplete(game_id, tournament_games) do
     incomplete = Enum.find(tournament_games, fn x -> x["game_id"] == game_id end)
+
     if incomplete["game_status"] == 100 do
       Analytica.clean_and_process_game(incomplete)
       Games.delete_incomplete_game(game_id)
@@ -105,6 +128,7 @@ defmodule Agot.Tjp do
         length = length(data)
         new_data = Enum.slice(data, i..length)
         IO.inspect(url <> " length: " <> Integer.to_string(length))
+
         if length === 50 do
           check_games_by_page(list ++ new_data, page + 1)
         else
@@ -112,7 +136,8 @@ defmodule Agot.Tjp do
             Analytica.process_all_games(list ++ new_data, page, length)
             IO.inspect(Integer.to_string(length(list ++ new_data)) <> " new games")
           end
-          Process.send_after(self(), :work, 1000 * 60 * 60 * 1)
+
+          Process.send_after(self(), :tjp, 1000 * 60 * 60 * 1)
         end
     end
   end

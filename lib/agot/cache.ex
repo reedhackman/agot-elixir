@@ -13,6 +13,7 @@ defmodule Agot.Cache do
     :ets.new(:updated_decks_cache, [:set, :public, :named_table])
     :ets.new(:matchups_cache, [:set, :public, :named_table])
     :ets.new(:updated_matchups_cache, [:set, :public, :named_table])
+    :ets.new(:top_ten_cache, [:set, :public, :named_table])
     {:ok, state}
   end
 
@@ -91,12 +92,23 @@ defmodule Agot.Cache do
     GenServer.cast(AgotCache, {:put, key, data, :updated_matchups_cache})
   end
 
+  # TOP TEN
+  def get_top_ten(key) do
+    GenServer.call(AgotCache, {:get, key, :top_ten_cache})
+  end
+
+  def put_top_ten(key, data) do
+    GenServer.cast(AgotCache, {:put, key, data, :top_ten_cache})
+  end
+
+  # HANDLERS
   def handle_call({:get, key, table}, _from, state) do
     reply =
       case :ets.lookup(table, key) do
         [] -> nil
         [{_key, data}] -> data
       end
+
     {:reply, reply, state}
   end
 
@@ -110,6 +122,7 @@ defmodule Agot.Cache do
       [] -> :ets.insert(table, {key, data})
       [{_key, _data}] -> nil
     end
+
     {:noreply, state}
   end
 

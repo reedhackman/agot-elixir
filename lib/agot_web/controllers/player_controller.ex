@@ -13,8 +13,6 @@ defmodule AgotWeb.PlayerController do
   end
 
   def search(conn, params \\ %{}) do
-    IO.inspect(params)
-
     page_number =
       if params["page_number"] === "" do
         1
@@ -77,7 +75,7 @@ defmodule AgotWeb.PlayerController do
     })
   end
 
-  def table(conn, _params) do
+  def react(conn, _params) do
     players =
       Players.list_players()
       |> Enum.map(fn x ->

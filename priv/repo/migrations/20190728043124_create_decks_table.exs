@@ -9,6 +9,8 @@ defmodule Agot.Repo.Migrations.CreateDecksTable do
       add :num_losses, :integer
       add :percent, :float
       add :played, :integer
+      add :last_ninety_percent, :float
+      add :last_ninety_played, :integer
 
       timestamps()
     end

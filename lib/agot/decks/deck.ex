@@ -13,6 +13,11 @@ defmodule Agot.Decks.Deck do
     :faction
   ]
 
+  @ninety [
+    :last_ninety_played,
+    :last_ninety_percent
+  ]
+
   schema "decks" do
     field :faction, :string
     field :agenda, :string
@@ -20,6 +25,8 @@ defmodule Agot.Decks.Deck do
     field :num_losses, :integer
     field :percent, :float
     field :played, :integer
+    field :last_ninety_played, :integer
+    field :last_ninety_percent, :float
 
     timestamps()
   end
@@ -31,9 +38,6 @@ defmodule Agot.Decks.Deck do
   end
 
   def update_changeset(deck, attrs) do
-    IO.inspect(attrs)
-    IO.inspect(deck)
-
     deck
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
@@ -44,5 +48,11 @@ defmodule Agot.Decks.Deck do
       },
       [:percent, :played]
     )
+  end
+
+  def ninety_changeset(deck, attrs) do
+    deck
+    |> cast(attrs, @ninety)
+    |> validate_required(@ninety)
   end
 end

@@ -50,6 +50,32 @@ defmodule Agot.Analytica do
     update_position(%{page_number: page_number, page_length: page_length})
   end
 
+  def update_all_decks_three_months do
+    Decks.list_decks()
+    |> Enum.each(fn x -> update_deck_three_months(x) end)
+  end
+
+  def update_deck_three_months(deck) do
+    games = Games.list_games_for_deck_interval(deck.faction, deck.agenda, 90)
+    wins = Enum.count(games, fn x -> x.winner_faction == deck.faction and x.winner_agenda == deck.agenda end)
+    losses = Enum.count(games, fn x -> x.loser_faction == deck.faction and x.loser_agenda == deck.agenda end)
+    percent =
+      if wins + losses > 0 do
+        wins / (wins + losses)
+      else
+        0
+      end
+
+    Decks.update_ninety(deck, %{last_ninety_percent: percent, last_ninety_played: wins + losses})
+  end
+
+  def update_daily_cache do
+    players = Players.top_ten_players()
+    Cache.put_top_ten("players", players)
+    decks = Decks.top_ten_quarter()
+    Cache.put_top_ten("decks", decks)
+  end
+
   def update_all_players do
     :ets.match(:updated_players_cache, {:"_", :"$2"})
     |> List.flatten()

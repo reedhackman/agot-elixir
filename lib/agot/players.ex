@@ -12,7 +12,7 @@ defmodule Agot.Players do
   def top_ten_players do
     query =
       from player in Player,
-        order_by: player.percent,
+        order_by: [desc: player.rating],
         limit: 10
 
     Repo.all(query)

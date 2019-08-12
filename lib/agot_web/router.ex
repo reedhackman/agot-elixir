@@ -20,12 +20,14 @@ defmodule AgotWeb.Router do
 
     get "/player/", PlayerController, :all
     post "/player/", PlayerController, :search
-    get "/player/table", PlayerController, :table
     get "/player/:id", PlayerController, :specific
 
     get "/deck/", DeckController, :all
     get "/deck/:faction", DeckController, :faction
     get "/deck/:faction/:agenda", DeckController, :agenda
+
+    get "/react/player", PlayerController, :react
+    get "/react/deck", DeckController, :react
   end
 
   # Other scopes may use custom stacks.
