@@ -1,5 +1,5 @@
 import "react-phoenix"
-import DecksTable from './components/DecksReact'
+import DecksReact from './components/DecksReact'
 
 window.Components = {
   DecksReact

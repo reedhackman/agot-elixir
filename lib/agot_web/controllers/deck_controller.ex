@@ -46,7 +46,7 @@ defmodule AgotWeb.DeckController do
           winner_agenda: x.winner_agenda,
           loser_faction: x.loser_faction,
           loser_agenda: x.loser_agenda,
-          date: x.tournament_date
+          date: NaiveDateTime.to_date(x.tournament_date)
         }
       end)
 
