@@ -124,6 +124,7 @@ export default class extends React.Component{
     })
     return(
       <div>
+        <Link to="/react/deck">ALL DECKS</Link>
         <h2>{this.props.match.params.faction} {this.props.match.params.agenda}</h2>
         <table>
           <thead>
