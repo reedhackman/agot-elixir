@@ -9,10 +9,51 @@ export default class extends React.Component{
       decks: {},
     }
   }
+  componentDidMount() {
+    let games = this.props.games
+    let matchups = {}
+    games.forEach((game) => {
+      if (game.winner_faction == this.props.match.params.faction && game.winner_agenda == this.props.match.params.agenda) {
+        if (!(matchups[game.loser_faction])) {
+          matchups[game.loser_faction] = {
+            [game.loser_agenda]: {
+              wins: 0,
+              losses: 0
+            }
+          }
+        }
+        else if (!(matchups[game.loser_faction][game.loser_agenda])) {
+          matchups[game.loser_faction][game.loser_agenda] = {
+            wins: 0,
+            losses: 0
+          }
+        }
+        matchups[game.loser_faction][game.loser_agenda].wins++
+      }
+      else if (game.loser_faction == this.props.match.params.faction && game.loser_agenda == this.props.match.params.agenda) {
+        if (!(matchups[game.winner_faction])) {
+          matchups[game.winner_faction] = {
+            [game.winner_agenda]: {
+              wins: 0,
+              losses: 0
+            }
+          }
+        }
+        else if (!(matchups[game.winner_faction][game.winner_agenda])) {
+          matchups[game.winner_faction][game.winner_agenda] = {
+            wins: 0,
+            losses: 0
+          }
+        }
+        matchups[game.winner_faction][game.winner_agenda].losses++
+      }
+    })
+    this.setState({
+      matchups: matchups
+    })
+  }
   componentWillReceiveProps({games}) {
     let matchups = {}
-    console.log(this.props.match.params.faction)
-    console.log(this.props.match.params.agenda)
     games.forEach((game) => {
       if (game.winner_faction == this.props.match.params.faction && game.winner_agenda == this.props.match.params.agenda) {
         if (!(matchups[game.loser_faction])) {
