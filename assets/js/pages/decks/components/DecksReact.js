@@ -11,6 +11,7 @@ export default class extends React.Component{
       games: this.props.games,
       start: "",
       end: "",
+      min: 0,
       update: false
     }
   }
@@ -42,10 +43,13 @@ export default class extends React.Component{
   handleEnd(e) {
     this.setState({end: e.target.value, update: true})
   }
+  setMin(e){
+    this.setState({min: e.target.value, update: true})
+  }
   render(){
     return(
       <div>
-        <DateRange startChange={this.handleStart.bind(this)} endChange={this.handleEnd.bind(this)} start={this.state.start} end={this.state.end} />
+        <DateRange startChange={this.handleStart.bind(this)} endChange={this.handleEnd.bind(this)} start={this.state.start} end={this.state.end} min={this.state.min} setMin={this.setMin.bind(this)} />
         <Router>
           <Route exact path="/react/deck/" render={() => <DecksFull games={this.state.games} />} />
           <Route exact path="/react/deck/:faction" render={({ match }) => <DecksFaction match={match} games={this.state.games} />} />
@@ -56,9 +60,10 @@ export default class extends React.Component{
   }
 }
 
-const DateRange = ({start, end, startChange, endChange}) => (
+const DateRange = ({start, end, min, startChange, endChange, setMin}) => (
   <div>
     <div><input type="date" value={start} onChange={startChange}/> Start Date</div>
     <div><input type="date" value={end} onChange={endChange}/> End Date</div>
+    <div><input type="number" value={min} onChange={setMin} /> Min Games Played</div>
   </div>
 )

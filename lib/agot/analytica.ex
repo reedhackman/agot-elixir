@@ -6,20 +6,6 @@ defmodule Agot.Analytica do
   alias Agot.Decks
   alias Agot.Misc
 
-  def process_from_test(data) do
-    Enum.each(data, fn x -> check_for_illegal(x) end)
-    exclude_map =
-      :ets.match(:exclude_cache, {:"_", :"$2"})
-      |> List.flatten()
-    exclude_list =
-      exclude_map
-      |> Enum.map(fn x -> x.tournament_id end)
-    Enum.each(data, fn x -> clean_and_process_game(x, exclude_list) end)
-    update_all_players()
-    update_all_decks()
-    update_all_matchups()
-  end
-
   def process_from_file do
     data = Poison.decode!(File.read!("./tjp"))
     Enum.each(data, fn x -> check_for_illegal(x) end)
@@ -289,9 +275,9 @@ defmodule Agot.Analytica do
             player
         end
       Games.create_game(%{
-          winner_faction: game.winner.faction,
+          winner_faction: if game.winner.faction == nil do game.winner.agenda else game.winner.faction end,
           winner_agenda: game.winner.agenda,
-          loser_faction: game.loser.faction,
+          loser_faction: if game.loser.faction == nil do game.loser.agenda else game.loser.faction end,
           loser_agenda: game.loser.agenda,
           tournament_id: game.misc.tournament_id,
           id: game.misc.id,

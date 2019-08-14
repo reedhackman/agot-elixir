@@ -51,10 +51,23 @@ export default class extends React.Component{
       })
     }
   }
+
   render(){
     console.log(this.state.decks)
     return(
-      <div>{this.props.games.length}</div>
+      <div>
+        <h2>All Decks</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Faction</th>
+              <th>Agenda</th>
+              <th>Win %</th>
+              <th>Games Played</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
     )
   }
 }
