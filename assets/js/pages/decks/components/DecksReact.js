@@ -47,13 +47,14 @@ export default class extends React.Component{
     this.setState({min: e.target.value, update: true})
   }
   render(){
+    console.log(this.state)
     return(
       <div>
         <DateRange startChange={this.handleStart.bind(this)} endChange={this.handleEnd.bind(this)} start={this.state.start} end={this.state.end} min={this.state.min} setMin={this.setMin.bind(this)} />
         <Router>
           <Route exact path="/react/deck/" render={() => <DecksFull games={this.state.games} />} />
           <Route exact path="/react/deck/:faction" render={({ match }) => <DecksFaction match={match} games={this.state.games} />} />
-          <Route exact path="/react/deck/:faction/:agenda" render={({ match }) => <DecksAgenda match={match} games={this.state.games} />} />
+          <Route exact path="/react/deck/:faction/:agenda" render={({ match }) => <DecksAgenda match={match} games={this.state.games} min={this.state.min} />} />
         </Router>
       </div>
     )
