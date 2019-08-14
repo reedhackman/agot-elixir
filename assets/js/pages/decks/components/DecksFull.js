@@ -10,7 +10,7 @@ export default class extends React.Component{
     }
   }
   componentDidMount() {
-    games = this.props.games
+    let games = this.props.games
     let decks = {}
     games.forEach((game) => {
       if(!(decks[game.winner_faction])){
