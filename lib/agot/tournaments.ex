@@ -27,4 +27,18 @@ defmodule Agot.Tournaments do
         tournament
     end
   end
+
+  def update_tournament(id, attrs) do
+    Repo.one(from t in Tournament, where: t.id == ^id)
+    |> Tournament.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def list_missing_placements do
+    query =
+      from t in Tournament,
+        where: is_nil(t.player_placements)
+
+    Repo.all(query)
+  end
 end

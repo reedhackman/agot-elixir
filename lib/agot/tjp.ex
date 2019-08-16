@@ -2,6 +2,7 @@ defmodule Agot.Tjp do
   use GenServer
   alias Agot.Analytica
   alias Agot.Games
+  alias Agot.Tournaments
 
   def start_link do
     GenServer.start_link(__MODULE__, %{})
@@ -15,6 +16,7 @@ defmodule Agot.Tjp do
   def handle_info(:tjp, state) do
     check_all_incomplete_age()
     check_all_remaining_incomplete()
+    check_all_remaining_placements()
     check_tjp()
     {:noreply, state}
   end
@@ -28,6 +30,13 @@ defmodule Agot.Tjp do
     Analytica.update_all_decks_three_months()
     Analytica.update_daily_cache()
     Process.send_after(self(), :daily, 1000 * 60 * 60 * 24)
+  end
+
+  def check_all_remaining_placements do
+    with missing <- Tournaments.list_missing_placements() do
+      missing
+      |> Enum.each(fn x -> check_missing_placement(x.id) end)
+    end
   end
 
   def check_all_remaining_incomplete do
@@ -46,6 +55,25 @@ defmodule Agot.Tjp do
       |> Enum.map(fn x -> x.tournament_id end)
       |> Enum.uniq()
       |> Enum.each(fn x -> check_tjp_tournament_age(x, current_time) end)
+    end
+  end
+
+  def check_missing_placement(id) do
+    url = "http://thejoustingpavilion.com/api/v3/tournaments/" <> Integer.to_string(id)
+
+    case HTTPoison.get(url, [], follow_redirect: true) do
+      {:ok, %{status_code: 200, body: body}} ->
+        IO.inspect(url)
+
+        data = Poison.decode!(body)
+
+        if List.first(data)["topx"] == 1 do
+          player_placements =
+            data
+            |> Enum.map(fn x -> x["player_id"] end)
+
+          Tournaments.update_tournament(id, %{player_placements: player_placements})
+        end
     end
   end
 

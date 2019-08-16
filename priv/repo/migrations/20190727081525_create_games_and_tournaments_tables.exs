@@ -4,14 +4,14 @@ defmodule Agot.Repo.Migrations.CreateGamesTable do
   def change do
     create table(:tournaments) do
       add :tournament_name, :string
-      add :player_placements, :map
+      add :player_placements, {:array, :integer}
       add :tournament_date, :string
 
       timestamps()
     end
 
     create unique_index(:tournaments, :id)
-    
+
     create table(:games) do
       add :winner_faction, :string
       add :loser_faction, :string

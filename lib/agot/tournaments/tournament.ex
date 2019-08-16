@@ -17,7 +17,7 @@ defmodule Agot.Tournaments.Tournament do
 
   schema "tournaments" do
     field :tournament_name, :string
-    field :player_placements, :map
+    field :player_placements, {:array, :integer}
 
     has_many :games, Game
 

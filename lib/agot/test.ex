@@ -24,5 +24,8 @@ defmodule Agot.Test do
     Agot.Misc.create_position()
     Agot.Analytica.process_all_games(data, page, position)
     Agot.Analytica.update_all_decks_three_months()
+    Agot.Tjp.check_all_incomplete_age()
+    Agot.Tjp.check_all_remaining_incomplete()
+    Agot.Tjp.check_all_remaining_placements()
   end
 end
