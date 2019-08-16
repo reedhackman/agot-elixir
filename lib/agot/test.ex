@@ -23,6 +23,6 @@ defmodule Agot.Test do
     data = Poison.decode!(File.read!("data.txt")) |> IO.inspect()
     Agot.Misc.create_position()
     Agot.Analytica.process_all_games(data, page, position)
-    Analytica.update_all_decks_three_months()
+    Agot.Analytica.update_all_decks_three_months()
   end
 end

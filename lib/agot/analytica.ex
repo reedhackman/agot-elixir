@@ -275,7 +275,7 @@ defmodule Agot.Analytica do
             player
         end
       rate(winner, loser)
-      if (game.winner.faction == game.loser.faction and game.winner.agenda == game.loser.agenda) === false do
+      if (game.winner.faction == game.loser.faction and game.winner.agenda == game.loser.agenda) === false and (game.loser.agenda !== "" and game.winner.agenda !== "") do
         Games.create_game(%{
             winner_faction: if game.winner.faction == nil do game.winner.agenda else game.winner.faction end,
             winner_agenda: game.winner.agenda,

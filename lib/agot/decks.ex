@@ -71,7 +71,8 @@ defmodule Agot.Decks do
   def top_five_faction(faction) do
     query =
       from deck in Deck,
-        where: deck.faction == ^faction,
+        where: deck.faction == ^faction and deck.last_ninety_played > 30,
+        order_by: [desc: deck.last_ninety_percent],
         limit: 5
 
     Repo.all(query)
@@ -80,7 +81,8 @@ defmodule Agot.Decks do
   def list_decks_for_faction(faction) do
     query =
       from deck in Deck,
-        where: deck.faction == ^faction
+        where: deck.faction == ^faction,
+        order_by: [desc: deck.last_ninety_percent]
 
     Repo.all(query)
   end

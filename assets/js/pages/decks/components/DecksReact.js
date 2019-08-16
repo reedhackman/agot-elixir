@@ -1,70 +1,53 @@
-import React from 'react'
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react'
+import { useRoutes } from 'hookrouter'
 import DecksFull from "./DecksFull.js"
 import DecksFaction from './DecksFaction.js'
 import DecksAgenda from './DecksAgenda.js'
 
-export default class extends React.Component{
-  constructor(props){
-    super(props)
-    this.state = {
-      games: this.props.games,
-      start: "",
-      end: "",
-      min: 0,
-      update: false
-    }
-  }
-  componentDidMount(){
+const DecksReact = (props) => {
+  const [games, setGames] = useState(props.games)
+  const [start, setStart] = useState("")
+  const [end, setEnd] = useState("")
+  const [min, setMin] = useState(0)
+
+  useEffect(() => {
     let dates = []
-    this.props.games.forEach((game) => {
+    props.games.forEach((game) => {
       dates.push(game.date)
     })
     dates.sort()
-    this.setState({
-      start: dates[0],
-      end: dates[dates.length - 1]
+    setStart(dates[0])
+    setEnd(dates[dates.length - 1])
+  }, [])
+
+  useEffect(() => {
+    let games = []
+    props.games.forEach((game) => {
+      if (Date.parse(start) <= Date.parse(game.date) && Date.parse(game.date) <= Date.parse(end) ) {
+        games.push(game)
+      }
     })
+    setGames(games)
+  }, [start, end, min])
+
+  const routes = {
+    "/react/deck": () => <DecksFull games={games} min={min} />,
+    "/react/deck/:faction": ({ faction }) => <DecksFaction faction={faction} games={games} />,
+    "/react/deck/:faction/:agenda": ({ faction, agenda }) => <DecksAgenda faction={faction.replace(/%20/g, " ").replace(/%22/g, '"')} agenda={agenda.replace(/%20/g, " ").replace(/%22/g, '"')} games={games} min={min} />
   }
-  componentDidUpdate(){
-    if(this.state.update){
-      let games = []
-      this.props.games.forEach((game) => {
-        if (Date.parse(this.state.start) <= Date.parse(game.date) && Date.parse(game.date) <= Date.parse(this.state.end) ) {
-          games.push(game)
-        }
-      })
-      this.setState({games: games, update: false})
-    }
-  }
-  handleStart(e) {
-    this.setState({start: e.target.value, update: true})
-  }
-  handleEnd(e) {
-    this.setState({end: e.target.value, update: true})
-  }
-  setMin(e){
-    this.setState({min: e.target.value, update: true})
-  }
-  render(){
-    console.log(this.state)
-    return(
+
+  const routeResult = useRoutes(routes)
+
+  return(
+    <div>
       <div>
-        <DateRange startChange={this.handleStart.bind(this)} endChange={this.handleEnd.bind(this)} start={this.state.start} end={this.state.end} min={this.state.min} setMin={this.setMin.bind(this)} />
-        <Router>
-          <Route exact path="/react/deck/" render={() => <DecksFull games={this.state.games} />} />
-          <Route exact path="/react/deck/:faction" render={({ match }) => <DecksFaction match={match} games={this.state.games} />} />
-          <Route exact path="/react/deck/:faction/:agenda" render={({ match }) => <DecksAgenda match={match} games={this.state.games} min={this.state.min} />} />
-        </Router>
+        <div><input type="date" value={start} onChange={e => setStart(e.target.value)}/> Start Date</div>
+        <div><input type="date" value={end} onChange={e => setEnd(e.target.value)}/> End Date</div>
+        <div><input type="number" value={min} onChange={e => setMin(e.target.value)} /> Min Games Played</div>
       </div>
-    )
-  }
+      {routeResult}
+    </div>
+  )
 }
 
-const DateRange = ({start, end, min, startChange, endChange, setMin}) => (
-  <div>
-    <div><input type="date" value={start} onChange={startChange}/> Start Date</div>
-    <div><input type="date" value={end} onChange={endChange}/> End Date</div>
-    <div><input type="number" value={min} onChange={setMin} /> Min Games Played</div>
-  </div>
-)
+export default DecksReact

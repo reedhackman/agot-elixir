@@ -1,4 +1,4 @@
-<h1>Decks - <%= @faction %></h1>
+<h1>Decks - <%= @faction %> (Last 90 Days)</h1>
 <table>
   <thead>
     <tr>
@@ -11,8 +11,8 @@
     <%= for deck <- @decks do %>
       <a href="/deck/<%= @faction %>/<%= deck.agenda %>"><tr>
         <td><%= deck.agenda %></td>
-        <td><%= Float.round(deck.percent, 1) %></td>
-        <td><%= deck.played %></td>
+        <td><%= Float.round(deck.last_ninety_percent * 100, 2) %></td>
+        <td><%= deck.last_ninety_played %></td>
       </tr></a>
     <% end %>
   </tbody>

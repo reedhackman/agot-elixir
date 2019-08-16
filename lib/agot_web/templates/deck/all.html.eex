@@ -1,4 +1,4 @@
-<h1>Decks</h1>
+<h1>Decks (Last 90 Days)</h1>
 <div class="">
   <a href="/deck/Baratheon"><h2>Baratheon</h2></a>
   <table>
@@ -11,11 +11,11 @@
     </thead>
     <tbody>
       <%= for deck <- @baratheon do %>
-      <a href="/deck/Baratheon/<%= deck.agenda %>"><tr>
-        <td><%= deck.agenda %></td>
-        <td><%= Float.round(deck.percent, 1) %></td>
-        <td><%= deck.played %></td>
-      </tr></a>
+      <tr>
+        <td><a href="/deck/Baratheon/<%= deck.agenda %>"><%= deck.agenda %></a></td>
+        <td><%= Float.round(100 * deck.last_ninety_percent, 2) %></td>
+        <td><%= deck.last_ninety_played %></td>
+      </tr>
       <% end %>
     </tbody>
   </table>
@@ -32,11 +32,11 @@
     </thead>
     <tbody>
       <%= for deck <- @greyjoy do %>
-      <a href="/deck/Greyjoy/<%= deck.agenda %>"><tr>
-        <td><%= deck.agenda %></td>
-        <td><%= Float.round(deck.percent, 1) %></td>
-        <td><%= deck.played %></td>
-      </tr></a>
+      <tr>
+        <td><a href="/deck/Greyjoy/<%= deck.agenda %>"><%= deck.agenda %></a></td>
+        <td><%= Float.round(100 * deck.last_ninety_percent, 2) %></td>
+        <td><%= deck.last_ninety_played %></td>
+      </tr>
       <% end %>
     </tbody>
   </table>
@@ -53,11 +53,11 @@
     </thead>
     <tbody>
       <%= for deck <- @lannister do %>
-      <a href="/deck/Lannister/<%= deck.agenda %>"><tr>
-        <td><%= deck.agenda %></td>
-        <td><%= Float.round(deck.percent, 1) %></td>
-        <td><%= deck.played %></td>
-      </tr></a>
+      <tr>
+        <td><a href="/deck/Lannister/<%= deck.agenda %>"><%= deck.agenda %></a></td>
+        <td><%= Float.round(100 * deck.last_ninety_percent, 2) %></td>
+        <td><%= deck.last_ninety_played %></td>
+      </tr>
       <% end %>
     </tbody>
   </table>
@@ -74,11 +74,11 @@
     </thead>
     <tbody>
       <%= for deck <- @martell do %>
-      <a href="/deck/Martell/<%= deck.agenda %>"><tr>
-        <td><%= deck.agenda %></td>
-        <td><%= Float.round(deck.percent, 1) %></td>
-        <td><%= deck.played %></td>
-      </tr></a>
+      <tr>
+        <td><a href="/deck/Martell/<%= deck.agenda %>"><%= deck.agenda %></a></td>
+        <td><%= Float.round(100 * deck.last_ninety_percent, 2) %></td>
+        <td><%= deck.last_ninety_played %></td>
+      </tr>
       <% end %>
     </tbody>
   </table>
@@ -95,11 +95,11 @@
     </thead>
     <tbody>
       <%= for deck <- @stark do %>
-      <a href="/deck/Stark/<%= deck.agenda %>"><tr>
-        <td><%= deck.agenda %></td>
-        <td><%= Float.round(deck.percent, 1) %></td>
-        <td><%= deck.played %></td>
-      </tr></a>
+      <tr>
+        <td><a href="/deck/Stark/<%= deck.agenda %>"><%= deck.agenda %></a></td>
+        <td><%= Float.round(100 * deck.last_ninety_percent, 2) %></td>
+        <td><%= deck.last_ninety_played %></td>
+      </tr>
       <% end %>
     </tbody>
   </table>
@@ -116,11 +116,11 @@
     </thead>
     <tbody>
       <%= for deck <- @targaryen do %>
-      <a href="/deck/Targaryen/<%= deck.agenda %>"><tr>
-        <td><%= deck.agenda %></td>
-        <td><%= Float.round(deck.percent, 1) %></td>
-        <td><%= deck.played %></td>
-      </tr></a>
+      <tr>
+        <td><a href="/deck/Targaryen/<%= deck.agenda %>"><%= deck.agenda %></a></td>
+        <td><%= Float.round(100 * deck.last_ninety_percent, 2) %></td>
+        <td><%= deck.last_ninety_played %></td>
+      </tr>
       <% end %>
     </tbody>
   </table>
@@ -137,11 +137,11 @@
     </thead>
     <tbody>
       <%= for deck <- @nights_watch do %>
-      <a href="/deck/Night's Watch/<%= deck.agenda %>"><tr>
-        <td><%= deck.agenda %></td>
-        <td><%= Float.round(deck.percent, 1) %></td>
-        <td><%= deck.played %></td>
-      </tr></a>
+      <tr>
+        <td><a href="/deck/Night's Watch/<%= deck.agenda %>"><%= deck.agenda %></a></td>
+        <td><%= Float.round(100 * deck.last_ninety_percent, 2) %></td>
+        <td><%= deck.last_ninety_played %></td>
+      </tr>
       <% end %>
     </tbody>
   </table>
@@ -158,11 +158,11 @@
     </thead>
     <tbody>
       <%= for deck <- @tyrell do %>
-      <a href="/deck/Tyrell/<%= deck.agenda %>"><tr>
-        <td><%= deck.agenda %></td>
-        <td><%= Float.round(deck.percent, 1) %></td>
-        <td><%= deck.played %></td>
-      </tr></a>
+      <tr>
+        <td><a href="/deck/Tyrell/<%= deck.agenda %>"><%= deck.agenda %></a></td>
+        <td><%= Float.round(100 * deck.last_ninety_percent, 2) %></td>
+        <td><%= deck.last_ninety_played %></td>
+      </tr>
       <% end %>
     </tbody>
   </table>
@@ -179,11 +179,11 @@
     </thead>
     <tbody>
       <%= for deck <- @free_folk do %>
-      <a href="/deck/The Free Folk/<%= deck.agenda %>"><tr>
-        <td><%= deck.agenda %></td>
-        <td><%= Float.round(deck.percent, 1) %></td>
-        <td><%= deck.played %></td>
-      </tr></a>
+      <tr>
+        <td><a href="/deck/The Free Folk/<%= deck.agenda %>"><%= deck.agenda %></a></td>
+        <td><%= Float.round(100 * deck.last_ninety_percent, 2) %></td>
+        <td><%= deck.last_ninety_played %></td>
+      </tr>
       <% end %>
     </tbody>
   </table>
