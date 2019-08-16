@@ -3,6 +3,7 @@ defmodule Agot.Games do
   alias Agot.Games.Game
   alias Agot.Games.Incomplete
   alias Agot.Players
+  alias Agot.Tournaments
 
   import Ecto.Query
 
@@ -52,12 +53,13 @@ defmodule Agot.Games do
     Repo.all(query)
   end
 
-  def create_game(attrs, winner_id, loser_id) do
+  def create_game(attrs, winner_id, loser_id, tournament_id) do
     winner = Players.get_winner(winner_id)
     loser = Players.get_loser(loser_id)
+    tournament = Tournaments.get_tournament(tournament_id)
 
     %Game{}
-    |> Game.changeset(attrs, winner, loser)
+    |> Game.changeset(attrs, winner, loser, tournament)
     |> Repo.insert()
   end
 

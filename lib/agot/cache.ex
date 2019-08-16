@@ -14,6 +14,7 @@ defmodule Agot.Cache do
     :ets.new(:matchups_cache, [:set, :public, :named_table])
     :ets.new(:updated_matchups_cache, [:set, :public, :named_table])
     :ets.new(:top_ten_cache, [:set, :public, :named_table])
+    :ets.new(:tournaments_cache, [:set, :public, :named_table])
     {:ok, state}
   end
 
@@ -24,6 +25,15 @@ defmodule Agot.Cache do
 
   def put_exclude(key, data) do
     GenServer.cast(AgotCache, {:put_exclude, key, data, :exclude_cache})
+  end
+
+  # TOURNAMENTS
+  def get_tournament(key) do
+    GenServer.call(AgotCache, {:get, key, :tournaments_cache})
+  end
+
+  def put_tournament(key, data) do
+    GenServer.cast(AgotCache, {:put, key, data, :tournaments_cache})
   end
 
   # PLAYERS

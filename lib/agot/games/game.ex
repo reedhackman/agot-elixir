@@ -3,6 +3,7 @@ defmodule Agot.Games.Game do
   import Ecto.Changeset
 
   alias Agot.Players.Player
+  alias Agot.Tournaments.Tournament
 
   @fields [
     :winner_faction,
@@ -11,13 +12,13 @@ defmodule Agot.Games.Game do
     :loser_agenda,
     :tournament_id,
     :tournament_date,
-    :id,
+    :id
   ]
 
   @required_fields [
     :tournament_id,
     :tournament_date,
-    :id,
+    :id
   ]
 
   schema "games" do
@@ -25,20 +26,21 @@ defmodule Agot.Games.Game do
     field :winner_agenda, :string
     field :loser_faction, :string
     field :loser_agenda, :string
-    field :tournament_id, :integer
     field :tournament_date, :utc_datetime
 
     belongs_to :winner, Player
     belongs_to :loser, Player
+    belongs_to :tournament, Tournament
 
     timestamps()
   end
 
-  def changeset(game, attrs, winner, loser) do
+  def changeset(game, attrs, winner, loser, tournament) do
     game
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
     |> put_assoc(:winner, winner)
     |> put_assoc(:loser, loser)
+    |> put_assoc(:tournament, tournament)
   end
 end

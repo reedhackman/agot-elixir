@@ -5,6 +5,7 @@ defmodule Agot.Analytica do
   alias Agot.Matchups
   alias Agot.Decks
   alias Agot.Misc
+  alias Agot.Tournaments
 
   def process_from_file do
     data = Poison.decode!(File.read!("./tjp"))
@@ -141,6 +142,7 @@ defmodule Agot.Analytica do
           p2_agenda: "",
           tournament_id: attrs["tournament_id"],
           tournament_date: attrs["tournament_date"],
+          tournament_name: attrs["tournament_name"],
           game_id: attrs["game_id"],
         }
 
@@ -159,6 +161,7 @@ defmodule Agot.Analytica do
           p2_agenda: attrs["p2_agenda"],
           tournament_id: attrs["tournament_id"],
           tournament_date: attrs["tournament_date"],
+          tournament_name: attrs["tournament_name"],
           game_id: attrs["game_id"]
         }
 
@@ -177,6 +180,7 @@ defmodule Agot.Analytica do
           p2_agenda: "",
           tournament_id: attrs["tournament_id"],
           tournament_date: attrs["tournament_date"],
+          tournament_name: attrs["tournament_name"],
           game_id: attrs["game_id"]
         }
 
@@ -195,6 +199,7 @@ defmodule Agot.Analytica do
           p2_agenda: attrs["p2_agenda"],
           tournament_id: attrs["tournament_id"],
           tournament_date: attrs["tournament_date"],
+          tournament_name: attrs["tournament_name"],
           game_id: attrs["game_id"]
         }
     end
@@ -227,7 +232,8 @@ defmodule Agot.Analytica do
             misc: %{
               id: game.game_id,
               tournament_id: game.tournament_id,
-              tournament_date: game.tournament_date
+              tournament_date: game.tournament_date,
+              tournament_name: game.tournament_name
             }
           }
 
@@ -249,7 +255,8 @@ defmodule Agot.Analytica do
             misc: %{
               id: game.game_id,
               tournament_id: game.tournament_id,
-              tournament_date: game.tournament_date
+              tournament_date: game.tournament_date,
+              tournament_name: game.tournament_name
             }
           }
 
@@ -274,6 +281,13 @@ defmodule Agot.Analytica do
           player ->
             player
         end
+      _tournament =
+        case Cache.get_tournament(game.misc.tournament_id) do
+          nil ->
+            get_tournament(game.misc.tournament_id, game.misc.tournament_name)
+          tournament ->
+            tournament
+        end
       rate(winner, loser)
       if (game.winner.faction == game.loser.faction and game.winner.agenda == game.loser.agenda) === false and (game.loser.agenda !== "" and game.winner.agenda !== "") do
         Games.create_game(%{
@@ -284,7 +298,7 @@ defmodule Agot.Analytica do
             tournament_id: game.misc.tournament_id,
             id: game.misc.id,
             tournament_date: game.misc.tournament_date
-          }, game.winner.id, game.loser.id)
+          }, game.winner.id, game.loser.id, game.misc.tournament_id)
 
         process_decks_and_matchups(game.winner.faction, game.winner.agenda, game.loser.faction, game.loser.agenda)
       end
@@ -478,6 +492,17 @@ defmodule Agot.Analytica do
       matchup ->
         Cache.put_updated_matchup({faction, agenda, oppfaction, oppagenda}, %{id: matchup.id, num_wins: matchup.num_wins, num_losses: matchup.num_losses})
         matchup
+    end
+  end
+
+  def get_tournament(id, name) do
+    case Cache.get_tournament(id) do
+      nil ->
+        tournament = Tournaments.get_tournament(id, name)
+        Cache.put_tournament(id, tournament)
+        tournament
+      tournament ->
+        tournament
     end
   end
 
