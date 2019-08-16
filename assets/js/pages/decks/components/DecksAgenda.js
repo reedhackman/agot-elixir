@@ -65,8 +65,8 @@ const DecksAgenda = (props) => {
     if(deck.wins + deck.losses >= props.min){
       rows.push(
         <tr key={deck.faction + deck.agenda}>
-          <td><A href={`/react/deck/${deck.faction}/${deck.agenda}`}>{deck.faction}</A></td>
-          <td>{deck.agenda}</td>
+          <td><A href={`/react/deck/${deck.faction}`}>{deck.faction}</A></td>
+          <td><A href={`/react/deck/${deck.faction}/${deck.agenda}`}>{deck.agenda}</A></td>
           <td>{deck.wins / (deck.wins + deck.losses)}</td>
           <td>{deck.wins + deck.losses}</td>
         </tr>

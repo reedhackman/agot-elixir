@@ -32,7 +32,7 @@ const DecksReact = (props) => {
 
   const routes = {
     "/react/deck": () => <DecksFull games={games} min={min} />,
-    "/react/deck/:faction": ({ faction }) => <DecksFaction faction={faction} games={games} />,
+    "/react/deck/:faction": ({ faction }) => <DecksFaction faction={faction.replace(/%20/g, " ").replace(/%22/g, '"')} games={games} min={min} />,
     "/react/deck/:faction/:agenda": ({ faction, agenda }) => <DecksAgenda faction={faction.replace(/%20/g, " ").replace(/%22/g, '"')} agenda={agenda.replace(/%20/g, " ").replace(/%22/g, '"')} games={games} min={min} />
   }
 
