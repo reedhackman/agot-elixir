@@ -5,8 +5,6 @@ defmodule Agot.Repo.Migrations.CreatePlayersTournamentsTable do
     create table(:players_tournaments, primary_key: false) do
       add :player_id, references(:players), primary_key: true
       add :tournament_id, references(:tournaments), primary_key: true
-
-      timestamps()
     end
 
     create index(:players_tournaments, [:player_id])

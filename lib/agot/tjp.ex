@@ -69,12 +69,16 @@ defmodule Agot.Tjp do
 
         data = Poison.decode!(body)
 
-        if List.first(data)["topx"] == 1 do
-          player_placements =
-            data
-            |> Enum.map(fn x -> x["player_id"] end)
+        players =
+          data
+          |> Enum.map(fn x -> x["player_id"] end)
 
-          Tournaments.update_tournament(tournament, %{player_placements: player_placements})
+        if tournament.players === [] do
+          Enum.each(players, fn x -> Tournaments.add_player_to_tournament(tournament, x) end)
+        end
+
+        if List.first(data)["topx"] == 1 do
+          Tournaments.update_tournament(tournament, %{player_placements: players})
         end
     end
   end

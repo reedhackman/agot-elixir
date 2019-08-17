@@ -18,6 +18,16 @@ defmodule Agot.Tournaments do
     Repo.one(from tournament in Tournament, where: tournament.id == ^id)
   end
 
+  def get_tournament_and_players(id) do
+    query =
+      from tournament in Tournament,
+        where: tournament.id == ^id,
+        left_join: players in assoc(tournament, :players),
+        preload: [players: players]
+
+    Repo.one(query)
+  end
+
   def get_tournament(id, name) do
     case Repo.one(from tournament in Tournament, where: tournament.id == ^id) do
       nil ->
@@ -45,8 +55,10 @@ defmodule Agot.Tournaments do
 
   def list_missing_placements do
     query =
-      from t in Tournament,
-        where: is_nil(t.player_placements)
+      from tournament in Tournament,
+        where: is_nil(tournament.player_placements),
+        left_join: players in assoc(tournament, :players),
+        preload: [players: players]
 
     Repo.all(query)
   end

@@ -34,6 +34,7 @@ defmodule Agot.Tournaments.Tournament do
 
   def player_changeset(tournament, player) do
     tournament
-    |> put_assoc(:players, player)
+    |> change()
+    |> put_assoc(:players, [player])
   end
 end
