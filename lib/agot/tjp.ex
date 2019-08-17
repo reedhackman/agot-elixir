@@ -80,6 +80,9 @@ defmodule Agot.Tjp do
         if List.first(data)["topx"] == 1 do
           Tournaments.update_tournament(tournament, %{player_placements: players})
         end
+
+      {:error, _} ->
+        nil
     end
   end
 
