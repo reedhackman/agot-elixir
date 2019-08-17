@@ -1,5 +1,6 @@
 defmodule Agot.Tournaments do
   alias Agot.Tournaments.Tournament
+  alias Agot.Players
   alias Agot.Repo
   alias Agot.Cache
   import Ecto.Query
@@ -28,9 +29,17 @@ defmodule Agot.Tournaments do
     end
   end
 
-  def update_tournament(id, attrs) do
-    Repo.one(from t in Tournament, where: t.id == ^id)
+  def update_tournament(%Tournament{} = tournament, attrs) do
+    tournament
     |> Tournament.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def add_player_to_tournament(%Tournament{} = tournament, player_id) do
+    player = Players.get_player_and_tournaments(player_id)
+
+    tournament
+    |> Tournament.player_changeset(player)
     |> Repo.update()
   end
 

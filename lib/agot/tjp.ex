@@ -9,33 +9,35 @@ defmodule Agot.Tjp do
   end
 
   def init(state) do
-    check_tjp()
+    Process.send_after(self(), :joust, 1000)
+    Process.send_after(self(), :daily, 1000 * 60 * 60 * 24)
     {:ok, state}
   end
 
-  def handle_info(:tjp, state) do
+  def handle_info(:joust, state) do
+    check_tjp()
     check_all_incomplete_age()
     check_all_remaining_incomplete()
-    check_all_remaining_placements()
-    check_tjp()
+    # check_all_remaining_placements()
+    Process.send_after(self(), :joust, 1000 * 60 * 60 * 3)
     {:noreply, state}
   end
 
   def handle_info(:daily, state) do
     daily_tasks()
+    Process.send_after(self(), :daily, 1000 * 60 * 60 * 24)
     {:noreply, state}
   end
 
   def daily_tasks do
     Analytica.update_all_decks_three_months()
     Analytica.update_daily_cache()
-    Process.send_after(self(), :daily, 1000 * 60 * 60 * 24)
   end
 
   def check_all_remaining_placements do
     with missing <- Tournaments.list_missing_placements() do
       missing
-      |> Enum.each(fn x -> check_missing_placement(x.id) end)
+      |> Enum.each(fn x -> check_missing_placement(x) end)
     end
   end
 
@@ -58,8 +60,8 @@ defmodule Agot.Tjp do
     end
   end
 
-  def check_missing_placement(id) do
-    url = "http://thejoustingpavilion.com/api/v3/tournaments/" <> Integer.to_string(id)
+  def check_missing_placement(tournament) do
+    url = "http://thejoustingpavilion.com/api/v3/tournaments/" <> Integer.to_string(tournament.id)
 
     case HTTPoison.get(url, [], follow_redirect: true) do
       {:ok, %{status_code: 200, body: body}} ->
@@ -72,7 +74,7 @@ defmodule Agot.Tjp do
             data
             |> Enum.map(fn x -> x["player_id"] end)
 
-          Tournaments.update_tournament(id, %{player_placements: player_placements})
+          Tournaments.update_tournament(tournament, %{player_placements: player_placements})
         end
     end
   end
@@ -164,8 +166,6 @@ defmodule Agot.Tjp do
             Analytica.process_all_games(list ++ new_data, page, length)
             IO.inspect(Integer.to_string(length(list ++ new_data)) <> " new games")
           end
-
-          Process.send_after(self(), :tjp, 1000 * 60 * 60 * 1)
         end
     end
   end

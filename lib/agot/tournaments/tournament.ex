@@ -3,6 +3,7 @@ defmodule Agot.Tournaments.Tournament do
   import Ecto.Changeset
 
   alias Agot.Games.Game
+  alias Agot.Players.Player
 
   @fields [
     :tournament_name,
@@ -20,6 +21,7 @@ defmodule Agot.Tournaments.Tournament do
     field :player_placements, {:array, :integer}
 
     has_many :games, Game
+    many_to_many :players, Player, join_through: "players_tournaments"
 
     timestamps()
   end
@@ -28,5 +30,10 @@ defmodule Agot.Tournaments.Tournament do
     tournament
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
+  end
+
+  def player_changeset(tournament, player) do
+    tournament
+    |> put_assoc(:players, player)
   end
 end

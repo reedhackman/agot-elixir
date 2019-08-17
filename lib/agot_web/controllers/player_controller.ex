@@ -71,6 +71,7 @@ defmodule AgotWeb.PlayerController do
       player: player,
       wins: wins,
       losses: losses,
+      tournaments: [],
       script_name: "players"
     })
   end

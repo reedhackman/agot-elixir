@@ -211,7 +211,7 @@ defmodule Agot.Analytica do
         Games.create_incomplete_game(%{tournament_id: game.tournament_id, id: game.game_id})
         nil
 
-      game.p1_id < 1 or game.p2_id < 1 ->
+      game.p1_id < 1 or game.p2_id < 1 or String.downcase(game.p1_name) =~ "bye" or String.downcase(game.p1_name) =~ "dummy" or String.downcase(game.p2_name) =~ "bye" or String.downcase(game.p2_name) =~ "dummy" ->
         nil
 
       game.p1_points > game.p2_points ->

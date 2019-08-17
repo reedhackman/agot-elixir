@@ -1,6 +1,8 @@
-import React, { Component } from "react"
+import React, { useState } from "react"
 
 const PlayerDecks = (props) => {
+  const [collapsed, setCollapsed] = useState(true)
+  const [count, setCount] = useState(5)
   let decks = {}
   let decksArray = []
   let rows = []
@@ -52,35 +54,34 @@ const PlayerDecks = (props) => {
     }
   }
   decksArray.sort((a, b) => {
-    if (a.agenda > b.agenda) {
-      return 1
-    }
-    else if(a.agenda < b.agenda){
-      return -1
-    }
-    return 0
+    return (b.wins + b.losses) - (a.wins + a.losses)
   })
-  decksArray.sort((a, b) => {
-    if (a.faction > b.faction) {
-      return 1
+  if (collapsed && decksArray.length >= count) {
+    for (var i = 0; i < count; i++) {
+      rows.push(
+        <tr key={decksArray[i].faction + decksArray[i].agenda}>
+          <td>{decksArray[i].faction}</td>
+          <td>{decksArray[i].agenda}</td>
+          <td>{decksArray[i].wins}</td>
+          <td>{decksArray[i].losses}</td>
+        </tr>
+      )
     }
-    else if(a.faction < b.faction){
-      return -1
-    }
-    return 0
-  })
-  decksArray.forEach((deck) => {
-    rows.push(
-      <tr key={deck.faction + deck.agenda}>
-        <td>{deck.faction}</td>
-        <td>{deck.agenda}</td>
-        <td>{deck.wins}</td>
-        <td>{deck.losses}</td>
-      </tr>
-    )
-  })
+  }
+  else {
+    decksArray.forEach((deck) => {
+      rows.push(
+        <tr key={deck.faction + deck.agenda}>
+          <td>{deck.faction}</td>
+          <td>{deck.agenda}</td>
+          <td>{deck.wins}</td>
+          <td>{deck.losses}</td>
+        </tr>
+      )
+    })
+  }
   return(
-    <div className="decksWrapper">
+    <div className="player-decksWrapper">
       <h1>Decks</h1>
       <table>
         <thead>
@@ -95,6 +96,7 @@ const PlayerDecks = (props) => {
           {rows}
         </tbody>
       </table>
+      {decksArray.length >= count ? <button onClick={() => {setCollapsed(!collapsed)}}>{collapsed ? "expand" : "collapse"}</button> : null}
     </div>
   )
 }

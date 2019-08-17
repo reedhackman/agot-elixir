@@ -1,6 +1,8 @@
-import React, { Component } from "react"
+import React, { useState } from "react"
 
 const PlayerOpponents = (props) => {
+  const [collapsed, setCollapsed] = useState(true)
+  const [count, setCount] = useState(5)
   let opponents = {}
   let opponentsArray = []
   let rows = []
@@ -37,28 +39,36 @@ const PlayerOpponents = (props) => {
     })
   }
   opponentsArray.sort((a, b) => {
-    if (a.name > b.name) {
-      return 1
-    }
-    else if(a.name < b.name){
-      return -1
-    }
-    return 0
+    return (b.wins + b.losses) - (a.wins + a.losses)
   })
-  opponentsArray.forEach((opponent) => {
-    rows.push(
-      <tr key={opponent.id}>
-        <td><a href={`/player/${opponent.id}`}>{opponent.name}</a></td>
-        <td>{opponent.wins}</td>
-        <td>{opponent.losses}</td>
-        <td>{opponent.spread}</td>
-        <td>{opponent.rating}</td>
-      </tr>
-    )
-  })
-
+  if (collapsed && opponentsArray.length >= count) {
+    for (var i = 0; i < count; i++) {
+      rows.push(
+        <tr key={opponentsArray[i].id}>
+          <td><a href={`/player/${opponentsArray[i].id}`}>{opponentsArray[i].name}</a></td>
+          <td>{opponentsArray[i].wins}</td>
+          <td>{opponentsArray[i].losses}</td>
+          <td>{opponentsArray[i].spread}</td>
+          <td>{opponentsArray[i].rating}</td>
+        </tr>
+      )
+    }
+  }
+  else{
+    opponentsArray.forEach((opponent) => {
+      rows.push(
+        <tr key={opponent.id}>
+          <td><a href={`/player/${opponent.id}`}>{opponent.name}</a></td>
+          <td>{opponent.wins}</td>
+          <td>{opponent.losses}</td>
+          <td>{opponent.spread}</td>
+          <td>{opponent.rating}</td>
+        </tr>
+      )
+    })
+  }
   return(
-    <div className="opponentsWrapper">
+    <div className="player-opponentsWrapper">
       <h1>Opponents</h1>
       <table>
         <thead>
@@ -74,6 +84,7 @@ const PlayerOpponents = (props) => {
           {rows}
         </tbody>
       </table>
+      {opponentsArray.length >= count ? <button onClick={() => {setCollapsed(!collapsed)}}>{collapsed ? "expand" : "collapse"}</button> : null}
     </div>
   )
 }

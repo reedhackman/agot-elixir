@@ -115,6 +115,16 @@ defmodule Agot.Players do
     Repo.one(from player in Player, where: player.id == ^id)
   end
 
+  def get_player_and_tournaments(id) do
+    query =
+      from player in Player,
+        where: player.id == ^id,
+        left_join: tournaments in assoc(player, :tournaments),
+        preload: [tournaments: tournaments]
+
+    Repo.one(query)
+  end
+
   def get_player(id, name) do
     case Repo.one(from player in Player, where: player.id == ^id) do
       nil ->

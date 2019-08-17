@@ -3,6 +3,7 @@ defmodule Agot.Players.Player do
   import Ecto.Changeset
 
   alias Agot.Games.Game
+  alias Agot.Tournaments.Tournament
 
   @fields [
     :name,
@@ -22,6 +23,7 @@ defmodule Agot.Players.Player do
 
     has_many :wins, Game, foreign_key: :winner_id, references: :id
     has_many :losses, Game, foreign_key: :loser_id, references: :id
+    many_to_many :tournaments, Tournament, join_through: "players_tournaments"
 
     timestamps()
   end
