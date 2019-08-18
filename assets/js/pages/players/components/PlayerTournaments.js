@@ -3,12 +3,34 @@ import React, { useState } from 'react'
 const PlayerTournaments = (props) => {
   const [collapsed, setCollapsed] = useState(true)
   const [count, setCount] = useState(5)
-  let tournamentsArray = []
+  let tournamentsArray = [...props.tournaments]
   let rows = []
+  if (collapsed && tournamentsArray.length >= count) {
+    for (var i = 0; i < count; i++) {
+      rows.push(
+        <tr key={tournamentsArray[i].id}>
+          <td><a target="_blank" href={`https://thejoustingpavilion.com/tournaments/${tournamentsArray[i].id}`}>{tournamentsArray[i].name}</a></td>
+          <td>{tournamentsArray[i].date}</td>
+          <td>Coming Soon</td>
+        </tr>
+      )
+    }
+  }
+  else{
+    tournamentsArray.forEach((tournament) => {
+      rows.push(
+        <tr key={tournament.id}>
+          <td><a href={`https://thejoustingpavilion.com/tournaments/${tournament.id}`}>{tournament.name}</a></td>
+          <td>{tournament.date}</td>
+          <td>Coming Soon</td>
+        </tr>
+      )
+    })
+  }
+  console.log(collapsed)
   return(
     <div className="player-tournamentsWrapper">
-      <h1>Tournaments - Coming Soon</h1>
-      {/*
+      <h1>Tournaments</h1>
       <table>
         <thead>
           <tr>
@@ -22,7 +44,6 @@ const PlayerTournaments = (props) => {
         </tbody>
       </table>
       {tournamentsArray.length >= count ? <button onClick={() => {setCollapsed(!collapsed)}}>{collapsed ? "expand" : "collapse"}</button> : null}
-      */}
     </div>
   )
 }

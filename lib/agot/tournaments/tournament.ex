@@ -6,19 +6,21 @@ defmodule Agot.Tournaments.Tournament do
   alias Agot.Players.Player
 
   @fields [
-    :tournament_name,
+    :name,
     :id,
-    :player_placements
+    :standings,
+    :date
   ]
 
   @required_fields [
-    :tournament_name,
+    :name,
     :id
   ]
 
   schema "tournaments" do
-    field :tournament_name, :string
-    field :player_placements, {:array, :integer}
+    field :name, :string
+    field :standings, {:array, :integer}
+    field :date, :utc_datetime
 
     has_many :games, Game
     many_to_many :players, Player, join_through: "players_tournaments"

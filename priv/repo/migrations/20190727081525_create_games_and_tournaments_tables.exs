@@ -3,9 +3,9 @@ defmodule Agot.Repo.Migrations.CreateGamesTable do
 
   def change do
     create table(:tournaments) do
-      add :tournament_name, :string
-      add :player_placements, {:array, :integer}
-      add :tournament_date, :string
+      add :name, :string
+      add :standings, {:array, :integer}
+      add :date, :utc_datetime
 
       timestamps()
     end

@@ -33,7 +33,7 @@ defmodule AgotWeb.PlayerController do
 
   def specific(conn, %{"id" => p_id}) do
     id = String.to_integer(p_id)
-    player = Players.get_player(id)
+    player = Players.get_player_and_tournaments(id)
 
     games = Games.list_games_for_player(id)
 
@@ -67,11 +67,17 @@ defmodule AgotWeb.PlayerController do
         }
       end)
 
+    IO.inspect(player)
+
+    tournaments =
+      player.tournaments
+      |> Enum.map(fn x -> %{name: x.name, id: x.id, standings: x.standings} end)
+
     render(conn, "specific.html", %{
       player: player,
       wins: wins,
       losses: losses,
-      tournaments: [],
+      tournaments: tournaments,
       script_name: "players"
     })
   end

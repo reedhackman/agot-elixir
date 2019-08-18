@@ -284,7 +284,7 @@ defmodule Agot.Analytica do
       _tournament =
         case Cache.get_tournament(game.misc.tournament_id) do
           nil ->
-            get_tournament(game.misc.tournament_id, game.misc.tournament_name)
+            get_tournament(game.misc.tournament_id, game.misc.tournament_name, game.misc.tournament_date)
           tournament ->
             tournament
         end
@@ -495,10 +495,10 @@ defmodule Agot.Analytica do
     end
   end
 
-  def get_tournament(id, name) do
+  def get_tournament(id, name, date) do
     case Cache.get_tournament(id) do
       nil ->
-        tournament = Tournaments.get_tournament(id, name)
+        tournament = Tournaments.get_tournament(id, name, date)
         Cache.put_tournament(id, tournament)
         tournament
       tournament ->

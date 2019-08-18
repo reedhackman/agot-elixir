@@ -5,8 +5,8 @@ defmodule Agot.Tournaments do
   alias Agot.Cache
   import Ecto.Query
 
-  def create_tournament(id, name) do
-    attrs = %{tournament_name: name, id: id}
+  def create_tournament(id, name, date) do
+    attrs = %{name: name, id: id, date: date}
 
     %Tournament{}
     |> Tournament.changeset(attrs)
@@ -28,10 +28,10 @@ defmodule Agot.Tournaments do
     Repo.one(query)
   end
 
-  def get_tournament(id, name) do
+  def get_tournament(id, name, date) do
     case Repo.one(from tournament in Tournament, where: tournament.id == ^id) do
       nil ->
-        create_tournament(id, name)
+        create_tournament(id, name, date)
 
       tournament ->
         Cache.put_tournament(id, tournament)
@@ -56,7 +56,7 @@ defmodule Agot.Tournaments do
   def list_missing_placements do
     query =
       from tournament in Tournament,
-        where: is_nil(tournament.player_placements),
+        where: is_nil(tournament.standings),
         left_join: players in assoc(tournament, :players),
         preload: [players: players]
 
