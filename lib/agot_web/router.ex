@@ -28,6 +28,8 @@ defmodule AgotWeb.Router do
 
     get "/react/player", PlayerController, :react
     get "/react/deck/*path", DeckController, :react
+
+    get "/faq", FaqController, :index
   end
 
   # Other scopes may use custom stacks.

@@ -67,11 +67,9 @@ defmodule AgotWeb.PlayerController do
         }
       end)
 
-    IO.inspect(player)
-
     tournaments =
       player.tournaments
-      |> Enum.map(fn x -> %{name: x.name, id: x.id, standings: x.standings} end)
+      |> Enum.map(fn x -> %{name: x.name, id: x.id, standings: x.standings, date: x.date} end)
 
     render(conn, "specific.html", %{
       player: player,

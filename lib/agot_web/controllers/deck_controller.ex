@@ -27,14 +27,19 @@ defmodule AgotWeb.DeckController do
     })
   end
 
-  def faction(conn, %{"faction" => faction}) do
+  def faction(conn, %{"faction" => faction, "sortby" => sortby, "order" => order}) do
     decks = Decks.list_decks_for_faction(faction)
     render(conn, "faction.html", %{faction: faction, decks: decks})
   end
 
-  def agenda(conn, %{"faction" => faction, "agenda" => agenda}) do
+  def agenda(conn, %{
+        "faction" => faction,
+        "agenda" => agenda,
+        "sortby" => sortby,
+        "order" => order
+      }) do
     decks = Decks.list_matchups_for_deck(faction, agenda)
-    render(conn, "agenda.html", decks: decks)
+    render(conn, "agenda.html", %{faction: faction, agenda: agenda, decks: decks})
   end
 
   def react(conn, _params) do

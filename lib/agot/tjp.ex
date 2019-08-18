@@ -18,7 +18,7 @@ defmodule Agot.Tjp do
     check_tjp()
     check_all_incomplete_age()
     check_all_remaining_incomplete()
-    # check_all_remaining_placements()
+    check_all_remaining_placements()
     Process.send_after(self(), :joust, 1000 * 60 * 60 * 3)
     {:noreply, state}
   end
@@ -66,7 +66,6 @@ defmodule Agot.Tjp do
     case HTTPoison.get(url, [], follow_redirect: true) do
       {:ok, %{status_code: 200, body: body}} ->
         IO.inspect(url)
-
         data = Poison.decode!(body)
 
         players =
@@ -77,8 +76,9 @@ defmodule Agot.Tjp do
           Enum.each(players, fn x -> Tournaments.add_player_to_tournament(tournament, x) end)
         end
 
-        if List.first(data)["topx"] == 1 do
-          Tournaments.update_tournament(tournament, %{player_placements: players})
+        if List.first(data)["topx"] == 1 or
+             NaiveDateTime.diff(NaiveDateTime.utc_now(), tournament.date) > 60 * 60 * 24 * 31 do
+          Tournaments.update_tournament(tournament, %{standings: players})
         end
 
       {:error, _} ->
