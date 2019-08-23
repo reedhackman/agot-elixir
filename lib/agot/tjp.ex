@@ -10,28 +10,24 @@ defmodule Agot.Tjp do
 
   def init(state) do
     Process.send_after(self(), :joust, 1000)
-    Process.send_after(self(), :daily, 1000 * 60 * 60 * 24)
     {:ok, state}
   end
 
   def handle_info(:joust, state) do
+    IO.puts("checking TJP")
     check_tjp()
+    IO.puts("done checking TJP")
     check_all_incomplete_age()
+    IO.puts("done checking incomplete age")
     check_all_remaining_incomplete()
+    IO.puts("done checking all remaining incomplete")
     check_all_remaining_placements()
+    IO.puts("done checking all remaining placements")
+    Analytica.update_all_decks_three_months()
+    IO.puts("done updating all decks last 90 days")
+    Analytica.update_daily_cache()
     Process.send_after(self(), :joust, 1000 * 60 * 60 * 3)
     {:noreply, state}
-  end
-
-  def handle_info(:daily, state) do
-    daily_tasks()
-    Process.send_after(self(), :daily, 1000 * 60 * 60 * 24)
-    {:noreply, state}
-  end
-
-  def daily_tasks do
-    Analytica.update_all_decks_three_months()
-    Analytica.update_daily_cache()
   end
 
   def check_all_remaining_placements do
@@ -169,10 +165,8 @@ defmodule Agot.Tjp do
         if length === 50 do
           check_games_by_page(list ++ new_data, page + 1)
         else
-          if length(new_data) do
-            Analytica.process_all_games(list ++ new_data, page, length)
-            IO.inspect(Integer.to_string(length(list ++ new_data)) <> " new games")
-          end
+          Analytica.process_all_games(list ++ new_data, page, length)
+          IO.inspect(Integer.to_string(length(list ++ new_data)) <> " new games")
         end
     end
   end
