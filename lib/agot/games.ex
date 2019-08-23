@@ -61,6 +61,8 @@ defmodule Agot.Games do
     %Game{}
     |> Game.changeset(attrs, winner, loser, tournament)
     |> Repo.insert()
+
+    IO.inspect(attrs)
   end
 
   def create_incomplete_game(attrs) do
