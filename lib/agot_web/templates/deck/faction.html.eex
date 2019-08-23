@@ -2,18 +2,18 @@
 <table>
   <thead>
     <tr>
-      <th>Agenda</th>
-      <th>Win Percent</th>
-      <th>Games Played</th>
+      <th><a href="/deck/<%= @faction %>&sort=agenda&order=asc">Agenda</a></th>
+      <th><a href="/deck/<%= @faction %>&sort=percent&order=asc">Win Percent</a></th>
+      <th><a href="/deck/<%= @faction %>&sort=played&order=asc">Games Played</a></th>
     </tr>
   </thead>
   <tbody>
     <%= for deck <- @decks do %>
-      <a href="/deck/<%= @faction %>/<%= deck.agenda %>"><tr>
-        <td><%= deck.agenda %></td>
+      <tr>
+        <td><a href="/deck/<%= @faction %>/<%= deck.agenda %>"><%= deck.agenda %></a></td>
         <td><%= Float.round(deck.last_ninety_percent * 100, 2) %></td>
         <td><%= deck.last_ninety_played %></td>
-      </tr></a>
+      </tr>
     <% end %>
   </tbody>
 </table>

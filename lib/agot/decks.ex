@@ -87,6 +87,25 @@ defmodule Agot.Decks do
     Repo.all(query)
   end
 
+  def list_decks_for_faction(faction, sort, order) do
+    order_by =
+      cond do
+        sort === "agenda" and order === "asc" -> [asc: :agenda]
+        sort === "agenda" and order === "desc" -> [desc: :agenda]
+        sort === "percent" and order === "asc" -> [asc: :last_ninety_percent]
+        sort === "percent" and order === "desc" -> [desc: :last_ninety_percent]
+        sort === "played" and order === "asc" -> [asc: :last_ninety_played]
+        sort === "played" and order === "desc" -> [desc: :last_ninety_played]
+      end
+
+    query =
+      from deck in Deck,
+        where: deck.faction == ^faction,
+        order_by: ^order_by
+
+    Repo.all(query)
+  end
+
   def list_matchups_for_deck(faction, agenda) do
     query =
       from matchup in Matchup,

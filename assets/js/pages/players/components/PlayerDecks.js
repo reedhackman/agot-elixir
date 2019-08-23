@@ -248,6 +248,11 @@ const PlayerDecks = props => {
             setCollapsed(!collapsed);
           }}
         >
+          {collapsed ? (
+            <i className="la la-caret-square-o-down"></i>
+          ) : (
+            <i className="la la-caret-square-o-up"></i>
+          )}
           {collapsed ? "expand" : "collapse"}
         </div>
       ) : null}
