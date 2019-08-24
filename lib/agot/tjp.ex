@@ -14,17 +14,11 @@ defmodule Agot.Tjp do
   end
 
   def handle_info(:joust, state) do
-    IO.puts("checking TJP")
     check_tjp()
-    IO.puts("done checking TJP")
     check_all_incomplete_age()
-    IO.puts("done checking incomplete age")
     check_all_remaining_incomplete()
-    IO.puts("done checking all remaining incomplete")
     check_all_remaining_placements()
-    IO.puts("done checking all remaining placements")
     Analytica.update_all_decks_three_months()
-    IO.puts("done updating all decks last 90 days")
     Analytica.update_daily_cache()
     Process.send_after(self(), :joust, 1000 * 60 * 60 * 3)
     {:noreply, state}
