@@ -20,6 +20,7 @@ defmodule Agot.Players.Player do
     field :rating, :float
     field :percent, :float
     field :played, :integer
+    field :ratings_over_time, :map
 
     has_many :wins, Game, foreign_key: :winner_id, references: :id
     has_many :losses, Game, foreign_key: :loser_id, references: :id
@@ -41,9 +42,10 @@ defmodule Agot.Players.Player do
     |> cast(
       %{
         percent: attrs.num_wins / (attrs.num_losses + attrs.num_wins),
-        played: attrs.num_wins + attrs.num_losses
+        played: attrs.num_wins + attrs.num_losses,
+        ratings_over_time: attrs.ratings_over_time
       },
-      [:percent, :played]
+      [:percent, :played, :ratings_over_time]
     )
   end
 end

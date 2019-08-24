@@ -288,7 +288,7 @@ defmodule Agot.Analytica do
           tournament ->
             tournament
         end
-      rate(winner, loser)
+      rate(winner, loser, game.misc.tournament_date)
       if (game.winner.faction == game.loser.faction and game.winner.agenda == game.loser.agenda) === false and (game.loser.agenda !== "" and game.winner.agenda !== "") do
         Games.create_game(%{
             winner_faction: if game.winner.faction == nil do game.winner.agenda else game.winner.faction end,
@@ -449,14 +449,38 @@ defmodule Agot.Analytica do
     Cache.put_updated_deck(loser_tuple, %{id: loser_deck.id, num_wins: loser_deck.num_wins, num_losses: loser_deck.num_losses + 1})
   end
 
-  def rate(winner, loser) do
+  def rate(winner, loser, date) do
     k = 40
     e_w = 1 / (1 + :math.pow(10, (loser.rating - winner.rating) / 400))
     e_l = 1 / (1 + :math.pow(10, (winner.rating - loser.rating) / 400))
     r_w = winner.rating + k * (1 - e_w)
     r_l = loser.rating + k * (0 - e_l)
-    Cache.put_updated_player(winner.id, %{id: winner.id, num_wins: winner.num_wins + 1, num_losses: winner.num_losses, rating: r_w})
-    Cache.put_updated_player(loser.id, %{id: loser.id, num_wins: loser.num_wins, num_losses: loser.num_losses + 1, rating: r_l})
+    if winner.ratings_over_time do
+      if Map.has_key?(winner.ratings_over_time, date) do
+        #fixing this
+        map = Map.get_and_update(winner.ratings_over_time, date, fn x -> {x, r_w} end) |> Kernel.elem(1)
+        Cache.put_updated_player(winner.id, %{id: winner.id, num_wins: winner.num_wins + 1, num_losses: winner.num_losses, rating: r_w, ratings_over_time: map})
+      else
+        #fix this
+        map = Map.put(winner.ratings_over_time, date, r_w)
+        Cache.put_updated_player(winner.id, %{id: winner.id, num_wins: winner.num_wins + 1, num_losses: winner.num_losses, rating: r_w, ratings_over_time: map})
+      end
+    else
+      Cache.put_updated_player(winner.id, %{id: winner.id, num_wins: winner.num_wins + 1, num_losses: winner.num_losses, rating: r_w, ratings_over_time: %{date => r_w}})
+    end
+    if loser.ratings_over_time do
+      if Map.has_key?(loser.ratings_over_time, date) do
+        #fixing this
+        map = Map.get_and_update(loser.ratings_over_time, date, fn x -> {x, r_l} end) |> Kernel.elem(1)
+        Cache.put_updated_player(loser.id, %{id: loser.id, num_wins: loser.num_wins, num_losses: loser.num_losses + 1, rating: r_l, ratings_over_time: map})
+      else
+        #fix this
+        map = Map.put(loser.ratings_over_time, date, r_l)
+        Cache.put_updated_player(loser.id, %{id: loser.id, num_wins: loser.num_wins, num_losses: loser.num_losses + 1, rating: r_l, ratings_over_time: map})
+      end
+    else
+      Cache.put_updated_player(loser.id, %{id: loser.id, num_wins: loser.num_wins, num_losses: loser.num_losses + 1, rating: r_l, ratings_over_time: %{date => r_l}})
+    end
   end
 
   def get_player(id, name) do
