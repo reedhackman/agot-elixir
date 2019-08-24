@@ -67,14 +67,16 @@ const DecksFull = props => {
   for (let faction in decks) {
     for (let agenda in decks[faction]) {
       let deck = decks[faction][agenda];
-      decksArray.push({
-        faction: faction,
-        agenda: agenda,
-        wins: deck.wins,
-        losses: deck.losses,
-        played: deck.wins + deck.losses,
-        percent: deck.wins / (deck.wins + deck.losses)
-      });
+      if (deck.wins + deck.losses >= props.min) {
+        decksArray.push({
+          faction: faction,
+          agenda: agenda,
+          wins: deck.wins,
+          losses: deck.losses,
+          played: deck.wins + deck.losses,
+          percent: deck.wins / (deck.wins + deck.losses)
+        });
+      }
     }
   }
   decksArray.sort((a, b) => {

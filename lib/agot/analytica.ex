@@ -512,6 +512,8 @@ defmodule Agot.Analytica do
     cond do
       Regex.match?(~r/l5r/i, name) ->
         Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
+      Regex.match?(~r/melee/i, name) ->
+        Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
       Regex.match?(~r/destiny/i, name) ->
         Cache.put_exclude(id, %{tournament_name: name, tournament_id: id})
       Regex.match?(~r/draft/i, name) ->
