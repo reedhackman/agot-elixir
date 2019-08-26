@@ -34,6 +34,17 @@ defmodule Agot.Misc do
     end
   end
 
+  def get_excluded_tournament(id, name) do
+    case list_single_excluded(id) do
+      excluded ->
+        Cache.put_exclude(excluded.id, %{name: excluded.name, id: excluded.id})
+
+      nil ->
+        create_excluded_tournament(id, name)
+        Cache.put_exclude(id, %{name: name, id: id})
+    end
+  end
+
   def create_excluded_tournament(id, name) do
     %Exclude{}
     |> Exclude.changeset(%{id: id, name: name})

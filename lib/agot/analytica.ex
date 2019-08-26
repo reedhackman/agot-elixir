@@ -609,7 +609,6 @@ defmodule Agot.Analytica do
 
     if winner.ratings_over_time do
       if Map.has_key?(winner.ratings_over_time, date) do
-        # fixing this
         map =
           Map.get_and_update(winner.ratings_over_time, date, fn x -> {x, r_w} end)
           |> Kernel.elem(1)
@@ -622,7 +621,6 @@ defmodule Agot.Analytica do
           ratings_over_time: map
         })
       else
-        # fix this
         map = Map.put(winner.ratings_over_time, date, r_w)
 
         Cache.put_updated_player(winner.id, %{
@@ -645,7 +643,6 @@ defmodule Agot.Analytica do
 
     if loser.ratings_over_time do
       if Map.has_key?(loser.ratings_over_time, date) do
-        # fixing this
         map =
           Map.get_and_update(loser.ratings_over_time, date, fn x -> {x, r_l} end)
           |> Kernel.elem(1)
@@ -658,7 +655,6 @@ defmodule Agot.Analytica do
           ratings_over_time: map
         })
       else
-        # fix this
         map = Map.put(loser.ratings_over_time, date, r_l)
 
         Cache.put_updated_player(loser.id, %{
@@ -740,8 +736,7 @@ defmodule Agot.Analytica do
       game["p2_agenda"] == "Protectors of the Realm" or
       game["p2_agenda"] == "The Power of Wealth" ->
         if Cache.get_exclude(id) == nil do
-          Misc.create_excluded_tournament(id, name)
-          Cache.put_exclude(id, %{name: name, id: id})
+          Misc.get_excluded_tournament(id, name)
         end
 
       true ->
