@@ -1,7 +1,6 @@
 defmodule Agot.Decks do
   alias Agot.Decks.Deck
   alias Agot.Repo
-  alias Agot.Cache
   alias Agot.Games.Game
   alias Agot.Decks.Matchup
 
@@ -15,16 +14,6 @@ defmodule Agot.Decks do
       |> Deck.create_changeset(attrs)
       |> Repo.insert()
       |> Kernel.elem(1)
-
-    Cache.put_deck({faction, agenda}, %{
-      faction: faction,
-      agenda: agenda,
-      num_wins: 0,
-      num_losses: 0,
-      id: deck.id
-    })
-
-    deck
   end
 
   def get_deck(faction, agenda) do
@@ -42,14 +31,6 @@ defmodule Agot.Decks do
         create_deck(faction, agenda)
 
       deck ->
-        Cache.put_deck({faction, agenda}, %{
-          faction: deck.faction,
-          agenda: deck.agenda,
-          num_wins: deck.num_wins,
-          num_losses: deck.num_losses,
-          id: deck.id
-        })
-
         deck
     end
   end

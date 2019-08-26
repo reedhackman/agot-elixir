@@ -3,7 +3,7 @@ defmodule Agot.Repo.Migrations.CreateExcludeTournamentsTable do
 
   def change do
     create table(:excluded_tournaments) do
-      add :tournament_name, :string
+      add :name, :string
 
       timestamps()
     end

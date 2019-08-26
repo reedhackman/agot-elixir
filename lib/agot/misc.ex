@@ -3,6 +3,8 @@ defmodule Agot.Misc do
   alias Agot.Misc.Position
   alias Agot.Misc.Exclude
 
+  import Ecto.Query
+
   def create_position() do
     %Position{}
     |> Position.changeset(%{page_number: 1, page_length: 0})
@@ -14,6 +16,7 @@ defmodule Agot.Misc do
     case Repo.one(Position) do
       nil ->
         create_position()
+
       position ->
         position
     end
@@ -21,6 +24,7 @@ defmodule Agot.Misc do
 
   def update_position(attrs) do
     position = Repo.one(Position)
+
     if position.page_number == attrs.page_number and position.page_length == attrs.page_length do
       nil
     else
@@ -31,10 +35,21 @@ defmodule Agot.Misc do
   end
 
   def create_excluded_tournament(id, name) do
-    "a"
+    %Exclude{}
+    |> Exclude.changeset(%{id: id, name: name})
+    |> Repo.insert()
+    |> Kernel.elem(1)
   end
 
   def list_excluded_tournaments do
     Repo.all(Exclude)
+  end
+
+  def list_single_excluded(id) do
+    query =
+      from exclude in Exclude,
+        where: exclude.id == ^id
+
+    Repo.one(query)
   end
 end

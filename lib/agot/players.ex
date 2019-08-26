@@ -1,6 +1,5 @@
 defmodule Agot.Players do
   alias Agot.Repo
-  alias Agot.Cache
   alias Agot.Players.Player
 
   import Ecto.Query
@@ -131,7 +130,6 @@ defmodule Agot.Players do
         create_player(id, name)
 
       player ->
-        Cache.put_player(id, player)
         player
     end
   end
@@ -158,7 +156,6 @@ defmodule Agot.Players do
 
   def create_player(id, name) do
     attrs = %{name: name, id: id, num_wins: 0, num_losses: 0, rating: 1200}
-    Cache.put_player(id, attrs)
 
     %Player{}
     |> Player.create_changeset(attrs)

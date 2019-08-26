@@ -1,6 +1,5 @@
 defmodule Agot.Matchups do
   alias Agot.Repo
-  alias Agot.Cache
   alias Agot.Decks.Matchup
   alias Agot.Games.Game
 
@@ -21,9 +20,6 @@ defmodule Agot.Matchups do
       |> Matchup.changeset(attrs)
       |> Repo.insert()
       |> Kernel.elem(1)
-
-    Cache.put_matchup({faction, agenda, oppfaction, oppagenda}, matchup)
-    matchup
   end
 
   def get_games_for_matchup(faction, agenda, oppfaction, oppagenda) do
@@ -98,7 +94,6 @@ defmodule Agot.Matchups do
         create_matchup(faction, agenda, oppfaction, oppagenda)
 
       matchup ->
-        Cache.put_matchup({faction, agenda, oppfaction, oppagenda}, matchup)
         matchup
     end
   end

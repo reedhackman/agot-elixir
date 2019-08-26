@@ -4,11 +4,11 @@ defmodule Agot.Misc.Exclude do
 
   @fields [
     :id,
-    :tournament_name
+    :name
   ]
 
   schema "excluded_tournaments" do
-    field :tournament_name, :string
+    field :name, :string
 
     timestamps()
   end

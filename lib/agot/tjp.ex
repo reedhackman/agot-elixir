@@ -9,7 +9,7 @@ defmodule Agot.Tjp do
   end
 
   def init(state) do
-    Process.send_after(self(), :joust, 1000)
+    Process.send_after(self(), :joust, 1000 * 10)
     {:ok, state}
   end
 
@@ -19,7 +19,6 @@ defmodule Agot.Tjp do
     check_all_remaining_incomplete()
     check_all_remaining_placements()
     Analytica.update_all_decks_three_months()
-    Analytica.update_daily_cache()
     Process.send_after(self(), :joust, 1000 * 60 * 60 * 3)
     {:noreply, state}
   end
