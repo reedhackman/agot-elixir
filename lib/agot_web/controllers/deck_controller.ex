@@ -50,18 +50,6 @@ defmodule AgotWeb.DeckController do
   end
 
   def react(conn, _params) do
-    games =
-      Games.list_games_with_agendas()
-      |> Enum.map(fn x ->
-        %{
-          winner_faction: x.winner_faction,
-          winner_agenda: x.winner_agenda,
-          loser_faction: x.loser_faction,
-          loser_agenda: x.loser_agenda,
-          date: NaiveDateTime.to_date(x.tournament_date)
-        }
-      end)
-
-    render(conn, "react.html", %{games: games, script_name: "decks"})
+    render(conn, "react.html", %{script_name: "decks"})
   end
 end

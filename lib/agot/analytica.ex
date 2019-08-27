@@ -736,7 +736,9 @@ defmodule Agot.Analytica do
       game["p2_agenda"] == "Protectors of the Realm" or
       game["p2_agenda"] == "The Power of Wealth" ->
         if Cache.get_exclude(id) == nil do
-          Misc.get_excluded_tournament(id, name)
+          excluded = Misc.get_excluded_tournament(id, name)
+          IO.inspect(excluded)
+          Cache.put_exclude(excluded.id, %{name: excluded.name, id: excluded.id})
         end
 
       true ->

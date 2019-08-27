@@ -3,35 +3,33 @@ import { useRoutes } from "hookrouter";
 import DecksFull from "./DecksFull.js";
 import DecksFaction from "./DecksFaction.js";
 import DecksAgenda from "./DecksAgenda.js";
+const moment = require("moment");
 
 const DecksReact = props => {
-  const [games, setGames] = useState(props.games);
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
+  const [games, setGames] = useState([]);
+  const [start, setStart] = useState(
+    moment()
+      .utc()
+      .subtract(90, "day")
+      .format("YYYY-MM-DD")
+  );
+  const [end, setEnd] = useState(
+    moment()
+      .utc()
+      .format("YYYY-MM-DD")
+  );
   const [min, setMin] = useState(20);
 
   useEffect(() => {
-    let dates = [];
-    props.games.forEach(game => {
-      dates.push(game.date);
-    });
-    dates.sort();
-    setStart(dates[0]);
-    setEnd(dates[dates.length - 1]);
-  }, []);
-
-  useEffect(() => {
-    let games = [];
-    props.games.forEach(game => {
-      if (
-        Date.parse(start) <= Date.parse(game.date) &&
-        Date.parse(game.date) <= Date.parse(end)
-      ) {
-        games.push(game);
-      }
-    });
-    setGames(games);
-  }, [start, end, min]);
+    async function fetchData() {
+      const response = await fetch(
+        `/api/games/range?start=${start}&end=${end}`
+      );
+      const data = await response.json();
+      setGames(data.games);
+    }
+    fetchData();
+  }, [start, end]);
 
   const routes = {
     "/react/deck": () => <DecksFull games={games} min={min} />,

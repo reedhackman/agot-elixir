@@ -1,1 +1,1 @@
-<%= ReactPhoenix.ClientSide.react_component("Components.DecksReact", %{games: @games}) %>
+<%= ReactPhoenix.ClientSide.react_component("Components.DecksReact") %>

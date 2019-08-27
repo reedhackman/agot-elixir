@@ -36,4 +36,9 @@ defmodule AgotWeb.Router do
   # scope "/api", AgotWeb do
   #   pipe_through :api
   # end
+  scope "/api", AgotWeb do
+    pipe_through :api
+
+    get "/games/range", GamesApiController, :range
+  end
 end

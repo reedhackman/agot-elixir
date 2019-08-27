@@ -91,4 +91,12 @@ defmodule Agot.Games do
 
     Repo.all(query)
   end
+
+  def list_games_for_interval(start_date, end_date) do
+    query =
+      from game in Game,
+        where: game.tournament_date >= ^start_date and game.tournament_date <= ^end_date
+
+    Repo.all(query)
+  end
 end
