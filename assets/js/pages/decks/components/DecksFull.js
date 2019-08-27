@@ -68,7 +68,7 @@ const DecksFull = props => {
     }
 
     setDecks(decksArray);
-    setPage(1);
+    setPage(decksArray.length ? 1 : 0);
     setLast(Math.ceil(decksArray.length / 15));
   }, [props.games, props.min]);
   let decksArray = decks;
