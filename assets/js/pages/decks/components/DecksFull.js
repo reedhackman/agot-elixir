@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { A } from "hookrouter";
 
 const DecksFull = props => {
-  const [decks, setDecks] = useState({});
+  const [decks, setDecks] = useState([]);
   const [asc, setAsc] = useState(false);
   const [sortBy, setSortBy] = useState("percent");
   const [page, setPage] = useState(0);
@@ -16,16 +16,12 @@ const DecksFull = props => {
     }
   };
   const handlePage = newPage => {
-    document.body.scrollTop = 0; // For Safari
-    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
     setPage(newPage);
   };
   useEffect(() => {
-    let count = 0;
     let decksObject = {};
     props.games.forEach(game => {
       if (!decksObject[game.winner_faction]) {
-        count++;
         decksObject[game.winner_faction] = {
           [game.winner_agenda]: {
             wins: 0,
@@ -33,14 +29,12 @@ const DecksFull = props => {
           }
         };
       } else if (!decksObject[game.winner_faction][game.winner_agenda]) {
-        count++;
         decksObject[game.winner_faction][game.winner_agenda] = {
           wins: 0,
           losses: 0
         };
       }
       if (!decksObject[game.loser_faction]) {
-        count++;
         decksObject[game.loser_faction] = {
           [game.loser_agenda]: {
             wins: 0,
@@ -48,7 +42,6 @@ const DecksFull = props => {
           }
         };
       } else if (!decksObject[game.loser_faction][game.loser_agenda]) {
-        count++;
         decksObject[game.loser_faction][game.loser_agenda] = {
           wins: 0,
           losses: 0
@@ -57,28 +50,29 @@ const DecksFull = props => {
       decksObject[game.winner_faction][game.winner_agenda].wins++;
       decksObject[game.loser_faction][game.loser_agenda].losses++;
     });
-    setDecks(decksObject);
-    setPage(1);
-    setLast(Math.ceil(count / 50));
-  }, [props.games]);
-
-  let decksArray = [];
-  let rows = [];
-  for (let faction in decks) {
-    for (let agenda in decks[faction]) {
-      let deck = decks[faction][agenda];
-      if (deck.wins + deck.losses >= props.min) {
-        decksArray.push({
-          faction: faction,
-          agenda: agenda,
-          wins: deck.wins,
-          losses: deck.losses,
-          played: deck.wins + deck.losses,
-          percent: deck.wins / (deck.wins + deck.losses)
-        });
+    var decksArray = [];
+    for (let faction in decksObject) {
+      for (let agenda in decksObject[faction]) {
+        let deck = decksObject[faction][agenda];
+        if (deck.wins + deck.losses >= props.min) {
+          decksArray.push({
+            faction: faction,
+            agenda: agenda,
+            wins: deck.wins,
+            losses: deck.losses,
+            played: deck.wins + deck.losses,
+            percent: deck.wins / (deck.wins + deck.losses)
+          });
+        }
       }
     }
-  }
+
+    setDecks(decksArray);
+    setPage(1);
+    setLast(Math.ceil(decksArray.length / 15));
+  }, [props.games, props.min]);
+  let decksArray = decks;
+  let rows = [];
   decksArray.sort((a, b) => {
     if (!asc) {
       if (sortBy === "faction" || sortBy === "agenda") {
@@ -103,9 +97,9 @@ const DecksFull = props => {
     }
     return a[sortBy] - b[sortBy];
   });
-  let j = Math.max((page - 1) * 50, 0);
+  let j = Math.max((page - 1) * 15, 0);
   let k = decksArray.length - j;
-  for (let i = 0; i < Math.min(k, 50); i++) {
+  for (let i = 0; i < Math.min(k, 15); i++) {
     let deck = decksArray[j];
     rows.push(
       <tr key={deck.faction + deck.agenda}>
